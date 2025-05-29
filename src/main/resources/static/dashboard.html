@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BARATEIRA - Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/dashboard.css" rel="stylesheet"> </head>
+<body>
+<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">BARATEIRA</a>
+  <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <input class="form-control form-control-dark w-100 rounded-0 border-0" type="text" placeholder="Search" aria-label="Search">
+  <div class="navbar-nav">
+    <div class="nav-item text-nowrap">
+      <a class="nav-link px-3" href="#" id="logoutButton">Sair</a>
+    </div>
+  </div>
+</header>
+
+<div class="container-fluid">
+  <div class="row">
+    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+      <div class="position-sticky pt-3 sidebar-sticky">
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+          <span>Principal</span>
+        </h6>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="dashboard.html">
+              Dashboard
+            </a>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="#">Compras</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="ordens_cliente.html">Ordem Do Cliente</a>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="estoque.html">Estoque</a></li>
+          <li class="nav-item"><a class="nav-link" href="filiais.html">Filiais</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Relatório</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Finanças</a></li>
+        </ul>
+
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+          <span>Setting</span>
+        </h6>
+        <ul class="nav flex-column mb-2">
+          <li class="nav-item"><a class="nav-link" href="#">Item</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Usuário</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Opções</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Dashboard</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-3">
+          <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Vendo local</div>
+            <div class="card-body">
+              <h5 class="card-title" id="vendoLocalValor">6,265</h5>
+              <p class="card-text" id="vendoLocalPercent">+11.02%</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/main.js"></script> </body>
+</html>
