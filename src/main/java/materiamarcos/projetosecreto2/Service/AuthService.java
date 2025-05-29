@@ -33,28 +33,28 @@ public class AuthService {
 
     @Transactional // Garante que a operação seja atômica
     public UsuarioResponseDTO registrarUsuario(RegistroRequestDTO registroRequestDTO) {
-        // 1. Verificar se username já existe
+        // Verificar se username já existe
         if (usuarioRepository.existsByUsername(registroRequestDTO.getUsername())) {
             throw new RuntimeException("Erro: Nome de usuário já está em uso!");
             // Em uma aplicação real, crie exceções customizadas e trate-as no ControllerAdvice
         }
 
-        // 2. Verificar se email já existe
+        // Verificar se email já existe
         if (usuarioRepository.existsByEmail(registroRequestDTO.getEmail())) {
             throw new RuntimeException("Erro: Email já está em uso!");
         }
 
-        // 3. Criar o novo usuário
+        // Criar o novo usuário
         User usuario = new User();
         usuario.setUsername(registroRequestDTO.getUsername());
         usuario.setEmail(registroRequestDTO.getEmail());
-        // 4. Criptografar a senha antes de salvar
+        // Criptografar a senha antes de salvar
         usuario.setPassword(passwordEncoder.encode(registroRequestDTO.getPassword()));
 
-        // 5. Salvar o usuário no banco de dados
+        // Salvar o usuário no banco de dados
         User usuarioSalvo = usuarioRepository.save(usuario);
 
-        // 6. Retornar um DTO com os dados do usuário (sem a senha)
+        // Retornar um DTO com os dados do usuário (sem a senha)
         return new UsuarioResponseDTO(usuarioSalvo.getId(), usuarioSalvo.getUsername(), usuarioSalvo.getEmail());
     }
 
@@ -68,10 +68,10 @@ public class AuthService {
                 )
         );
 
-        // 2. Se a autenticação for bem-sucedida, definir a autenticação no contexto de segurança
+        // Se a autenticação for bem-sucedida, definir a autenticação no contexto de segurança
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // 3. Gerar o token JWT
+        // Gerar o token JWT
         // O 'authentication.getName()' geralmente retorna o username do usuário autenticado.
         String jwt = tokenProvider.generateToken(authentication.getName());
 

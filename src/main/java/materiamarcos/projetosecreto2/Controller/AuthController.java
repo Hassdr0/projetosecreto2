@@ -1,5 +1,6 @@
 package materiamarcos.projetosecreto2.Controller;
 
+import materiamarcos.projetosecreto2.DTOs.JwtResponseDTO;
 import materiamarcos.projetosecreto2.DTOs.LoginRequestDTO;
 import materiamarcos.projetosecreto2.DTOs.RegistroRequestDTO;
 import materiamarcos.projetosecreto2.DTOs.UsuarioResponseDTO;
@@ -36,10 +37,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> loginUsuario(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
         try {
-            UsuarioResponseDTO usuarioLogado = authService.loginUsuario(loginRequestDTO);
-            // Por enquanto, retornamos apenas os dados do usuário.
-            // Depois, vamos retornar um TokenDTO aqui.
-            return ResponseEntity.ok(usuarioLogado);
+            String usuarioLogado = authService.loginUsuarioERetornarToken(loginRequestDTO);
+            // Por enquanto, retorna apenas os dados do usuário.
+            // Depois, tem que retornar um TokenDTO aqui.
+            return ResponseEntity.ok(new JwtResponseDTO(usuarioLogado));
         } catch (BadCredentialsException ex) {
             // Retorna 401 para credenciais inválidas
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Erro: Credenciais inválidas.");

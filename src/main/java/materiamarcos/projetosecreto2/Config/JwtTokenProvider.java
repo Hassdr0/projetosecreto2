@@ -23,8 +23,7 @@ public class JwtTokenProvider {
 
     @PostConstruct
     protected void init() {
-        // Lógica do init para criar jwtSecretKey a partir de jwtSecretString
-        // (Como mostrado na minha resposta anterior, com a verificação do tamanho da chave)
+        // Lógica do init
         if (jwtSecretString.length() < 32 && "DefaultSecretKeyParaDesenvolvimentoQueSejaLongaOSuficienteEComMaisDe32Bytes".equals(jwtSecretString) || jwtSecretString.length() < 32 && "DefaultSecretKeyParaDesenvolvimentoQueSejaLongaO کافی}".equals(jwtSecretString) ) {
             this.jwtSecretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
             System.err.println("**********************************************************************************************************");
@@ -49,9 +48,39 @@ public class JwtTokenProvider {
                 .signWith(jwtSecretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
+//Validação de nome
 
-        // (Adicionaremos métodos para validar o token e pegar o username depois)
-        // public String getUsernameFromToken(String token) { ... }
-        // public boolean validateToken(String token) { ... }
+    // Método para obter o username (subject) a partir do token JWT
+
+    public String getUsernameFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(jwtSecretKey) // Define a chave
+                .build()
+                .parseClaimsJws(token) // Faz o parse
+                .getBody()
+                .getSubject(); // Pega o "subject"
+    }
+
+    // Método para validar o token JWT
+    public boolean validateToken(String token) {
+        try {
+            // Tenta fazer o parse do token. Se conseguir e não lançar exceção
+            // a assinatura é válida e o token não está expirado (o parseClaimsJws já verifica isso).
+            Jwts.parserBuilder().setSigningKey(jwtSecretKey).build().parseClaimsJws(token);
+            return true;
+        } catch (io.jsonwebtoken.security.SecurityException ex) {
+            System.err.println("Assinatura JWT inválida: " + ex.getMessage());
+        } catch (io.jsonwebtoken.MalformedJwtException ex) {
+            System.err.println("Token JWT malformado: " + ex.getMessage());
+        } catch (io.jsonwebtoken.ExpiredJwtException ex) {
+            System.err.println("Token JWT expirado: " + ex.getMessage());
+        } catch (io.jsonwebtoken.UnsupportedJwtException ex) {
+            System.err.println("Token JWT não suportado: " + ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            // Este catch é para o caso de a string do token estar vazia ou nula
+            System.err.println("Argumentos da claim JWT estão vazios ou token é nulo: " + ex.getMessage());
+        }
+        return false;
+    }
     }
 
