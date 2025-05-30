@@ -1,0 +1,44 @@
+
+body {
+    font-family: var(--fonte-principal), sans-serif; /* Usa a sua fonte principal */
+    background-color: #f8f9fa; /* Cor de fundo da página */
+}
+
+header .navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+header .nav-link {
+    color: #495057;
+    margin-left: 1rem;
+}
+
+header .nav-link:hover {
+    color: var(--cor-primaria-barateira);
+}
+
+.container {
+    margin-top: 4rem;
+}
+
+.display-3 {
+    font-size: 4.5rem;
+    font-weight: 700;
+}
+
+.barateira-logo-erro { /* Ou o seletor que você usa para o logo no header */
+    color: var(--cor-primaria-barateira) !important; /* Garante o roxo */
+    font-weight: bold;
+    font-size: 1.8rem;
+}
+
+.btn-primary {
+    font-weight: 500;
+}
+
+/* Estilize a imagem se necessário (por exemplo, para limitar a largura) */
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}

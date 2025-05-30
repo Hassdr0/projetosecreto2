@@ -1,56 +1,269 @@
 
-:root {
-    --cor-primaria-barateira: #5D10B0;
-    --cor-primaria-hover-barateira: #4A0C8D;
-    --cor-fundo-pagina: #f4f6f9;
-    --cor-texto-padrao: #212529;
-    --cor-texto-secundario: #6c757d;
-    --fonte-principal: 'Arial', sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-    /* Se quiser usar uma fonte google: style.css: @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
-       Depois, definir: --fonte-principal: 'Montserrat', sans-serif;
-    */
+/* --- Variáveis Globais de Cores e Fontes (CSS Custom Properties) --- */
+:root {
+    --cor-primaria-barateira: #69238a; /* Roxo principal */
+    --cor-primaria-hover-barateira: #4A0C8D; /* Roxo mais escuro para hover/focus */
+    --cor-primaria-barateira-rgb: 93, 16, 176; /* Componentes RGB para rgba() */
+    
+    --cor-fundo-pagina: #f8f9fa; /* Cinza claro para fundos de página (Bootstrap bg-light) */
+    --cor-fundo-sidebar: #ffffff; /* Fundo branco para a sidebar */
+    --cor-fundo-header: #343a40; /* Bootstrap bg-dark, pode customizar */
+    
+    --cor-texto-padrao: #212529; /* Cor de texto padrão (Bootstrap default) */
+    --cor-texto-secundario: #6c757d; /* Cinza para textos secundários */
+    --cor-texto-claro: #ffffff; /* Para texto sobre fundos escuros */
+    --cor-texto-header-link: rgba(105, 35, 138, 0.75);
+    --cor-texto-header-link-hover: rgba(255, 255, 255, 0.9);
+    --cor-texto-sidebar-link: #495057; /* Cinza escuro para links não ativos na sidebar */
+    --cor-link-ativo-texto: #ffffff; /* Texto branco para links ativos na sidebar */
+    
+    --cor-borda-geral: #dee2e6; /* Borda padrão Bootstrap */
+    --cor-fundo-hover-sidebar: #e9ecef; /* Cinza claro para hover na sidebar */
+    
+    --cor-sombra-leve: rgba(0,0,0,0.05);
+
+    --fonte-principal: 'Inter', sans-serif; /* Define 'Inter' como fonte principal */
 }
 
-
+/* --- Estilos Gerais do Body e Tipografia --- */
 body {
     font-family: var(--fonte-principal);
+    font-weight: 400;
     color: var(--cor-texto-padrao);
-    background-color: #fff;
+    background-color: var(--cor-fundo-pagina);
     line-height: 1.6;
+    font-size: 0.95rem;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--fonte-principal);
+    color: var(--cor-primaria-barateira);
+    margin-top: 1.25rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+h1.h2 { /* Título principal da página dentro do <main> (como "Dashboard") */
+    font-weight: 700;
     color: var(--cor-primaria-barateira);
 }
 
 a {
     color: var(--cor-primaria-barateira);
     text-decoration: none;
+    transition: color 0.15s ease-in-out; /* Transição suave para cor do link */
 }
-
 a:hover {
     color: var(--cor-primaria-hover-barateira);
-    text-decoration: underline;
 }
 
+/* Adicione/Ajuste em css/checkout.css OU crie css/frete.css e linke no HTML */
 
+/* Breadcrumb no header da página de frete */
+.checkout-header .breadcrumb-item + .breadcrumb-item::before {
+    color: #adb5bd; /* Cor do separador do breadcrumb */
+}
+.checkout-header .breadcrumb-item.active {
+    font-weight: 500;
+}
+.checkout-header .breadcrumb-item.text-muted { /* Para "Pagamento" que ainda não foi alcançado */
+    color: #adb5bd !important;
+}
 
+/* Card de confirmação de endereço/contato */
+.card.mb-4 { /* Para o card que mostra o endereço e contato */
+    background-color: #f8f9fa; /* Um fundo levemente diferente */
+    border-color: #e9ecef;
+}
+.card.mb-4 .small { /* Link "Alterar" */
+    font-size: 0.8rem;
+}
+
+/* Opções de método de envio */
+.shipping-options .list-group-item {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+    border-color: #e9ecef;
+}
+.shipping-options .list-group-item:hover {
+    background-color: #f0f2f5; /* Um hover sutil */
+}
+.shipping-options .list-group-item input[type="radio"] {
+    margin-top: 0.2em;
+}
+.shipping-options .list-group-item .small {
+    font-size: 0.85em;
+}
+
+/* Botão Continuar para Pagamento */
+#btnContinuarParaPagamento {
+    font-size: 1.05rem;
+    padding: 0.65rem 1.5rem;
+}
+
+/* Resumo da Compra já deve estar estilizado pelo checkout.css,
+   mas certifique-se que os IDs para os valores (freteValor, totalValor)
+   estão no seu HTML para serem atualizados pelo JavaScript. */
+
+/* --- Estilos para Texto Selecionado --- */
+::selection {
+    background-color: var(--cor-primaria-barateira);
+    color: var(--cor-link-ativo-texto);
+}
+::-moz-selection { /* Para Firefox */
+    background-color: var(--cor-primaria-barateira);
+    color: var(--cor-link-ativo-texto);
+}
+
+/* --- Componentes Bootstrap Customizados --- */
+.btn {
+    font-family: var(--fonte-principal);
+    font-weight: 500;
+    border-radius: 0.3rem;
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
 
 .btn-primary {
     background-color: var(--cor-primaria-barateira);
     border-color: var(--cor-primaria-barateira);
-
-    /* Se quiser cantos mais arredondados ou menos:
-       border-radius: 0.25rem; (padrão) ou 0.5rem (mais arredondado) ou 0 (quadrado)
-    */
+    color: var(--cor-texto-claro);
 }
-
 .btn-primary:hover,
 .btn-primary:focus,
 .btn-primary:active {
+    color: var(--cor-texto-claro);
     background-color: var(--cor-primaria-hover-barateira);
     border-color: var(--cor-primaria-hover-barateira);
-    box-shadow: none;
+    box-shadow: 0 0 0 0.25rem rgba(var(--cor-primaria-barateira-rgb), 0.5);
+}
+
+/* --- Estilos do Cabeçalho (Navbar Superior) --- */
+header.navbar.bg-dark { /* Seletor mais específico para o seu header */
+    background-color: var(--cor-fundo-header) !important; /* Garante que sua cor seja aplicada sobre a do Bootstrap */
+    padding-top: 0.5rem; 
+    padding-bottom: 0.5rem;
+}
+
+header.navbar .navbar-brand {
+    font-weight: 600;
+    font-size: 1.15rem; 
+    color: var(--cor-texto-claro);
+}
+
+header.navbar .form-control-dark {
+    background-color: rgba(255, 255, 255, 0.15); /* Fundo do input de busca */
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 10px; /* Cantos arredondados */
+    color: var(--cor-texto-claro); /* Cor do texto digitado */
+    padding: 0.375rem 1rem; 
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    max-width: 280px; /* Limita a largura do campo de busca, ajuste conforme necessário */
+    margin: 0 auto; /* Tenta centralizar o campo de busca se ele não for w-100 */
+}
+header.navbar .form-control-dark::placeholder { /* Cor do texto placeholder */
+    color: rgba(255, 255, 255, 0.7);
+}
+header.navbar .form-control-dark:focus {
+    background-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: none; 
+    color: var(--cor-texto-claro);
+}
+
+/* Link "Sair" no Navbar */
+header.navbar .navbar-nav .nav-link.logout-button { /* Usando a classe comum */
+    color: var(--cor-texto-header-link);
+    font-weight: 500;
+}
+header.navbar .navbar-nav .nav-link.logout-button:hover {
+    color: var(--cor-texto-header-link-hover);
+}
+
+
+/* --- Estilos da Sidebar (Menu Lateral) --- */
+#sidebarMenu {
+    background-color: var(--cor-fundo-sidebar);
+    border-right: 1px solid var(--cor-borda-geral);
+    box-shadow: 2px 0 8px var(--cor-sombra-leve);
+    height: 100vh; /* Garante que a sidebar ocupe toda a altura */
+    position: sticky; /* Mantém a sidebar fixa no scroll da página (já tem no HTML) */
+    top: 0; /* Alinha no topo */
+}
+
+.sidebar-sticky {
+    padding-top: 1rem;
+    height: calc(100vh - 56px); /* Altura total menos a altura aproximada do header. Ajuste 56px se seu header for diferente */
+    overflow-x: hidden;
+    overflow-y: auto; /* Adiciona scroll se o conteúdo do menu for maior que a altura */
+}
+
+.sidebar-heading {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--cor-texto-secundario);
+    padding: 0.75rem 1rem 0.25rem 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.5rem;
+}
+
+#sidebarMenu .nav-link {
+    font-weight: 500;
+    color: var(--cor-texto-sidebar-link);
+    padding: 0.6rem 1rem;
+    margin: 0.1rem 0.75rem;
+    border-radius: 0.3rem;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+#sidebarMenu .nav-link [data-feather] {
+    margin-right: 12px; /* ESPAÇO ENTRE ÍCONE E TEXTO */
+    width: 16px;
+    height: 16px;
+    stroke-width: 2.5;
+    color: currentColor; /* Ícone herda a cor do texto do link <a> */
+    vertical-align: middle; /* Tenta alinhar melhor com o texto */
+}
+
+#sidebarMenu .nav-link:not(.active):hover {
+    background-color: var(--cor-fundo-hover-sidebar);
+    color: var(--cor-primaria-barateira);
+}
+
+#sidebarMenu .nav-link.active {
+    color: var(--cor-link-ativo-texto);
+    background-color: var(--cor-primaria-barateira);
+    font-weight: 600;
+}
+
+/* --- Outros Estilos Específicos de Página --- */
+.loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--cor-primaria-barateira);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.page-header-toolbar {
+    margin-bottom: -0.5rem; 
+    padding-bottom: 0.75rem;
+}
+
+.btn [data-feather].align-text-bottom {
+    width: 1em;
+    height: 1em;
+    margin-right: 0.25rem;
+    vertical-align: text-bottom;
 }

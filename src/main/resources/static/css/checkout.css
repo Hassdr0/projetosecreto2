@@ -1,0 +1,169 @@
+/* static/css/checkout.css */
+
+body.checkout-page {
+    background-color: #fff; /* Fundo branco para a página de checkout */
+    font-family: var(--fonte-principal, sans-serif);
+    color: var(--cor-texto-padrao, #212529);
+}
+
+.free-shipping-bar {
+    background-color: var(--cor-primaria-barateira, #5D10B0);
+    color: var(--cor-texto-claro, #fff);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.checkout-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--cor-primaria-barateira, #5D10B0);
+    margin-bottom: 0.5rem;
+}
+
+.checkout-header .breadcrumb-item a {
+    color: var(--cor-primaria-barateira, #5D10B0);
+    text-decoration: none;
+}
+.checkout-header .breadcrumb-item.active {
+    color: var(--cor-texto-secundario, #6c757d);
+}
+
+.express-checkout .payment-options-buttons .btn-express-payment {
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    padding: 0.75rem;
+    flex-grow: 1;
+    margin: 0 0.25rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.375rem; /* Bootstrap padrão */
+}
+.express-checkout .payment-options-buttons .btn-express-payment:hover {
+    border-color: #ccc;
+    background-color: #f0f0f0;
+}
+.express-checkout .payment-options-buttons .btn-express-payment img {
+    max-height: 24px; /* Altura das logos dos pagamentos */
+}
+
+
+.separator-ou {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #aaa;
+    font-size: 0.9rem;
+}
+.separator-ou::before,
+.separator-ou::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+}
+.separator-ou:not(:empty)::before {
+    margin-right: .5em;
+}
+.separator-ou:not(:empty)::after {
+    margin-left: .5em;
+}
+
+.contact-info h5, .shipping-address h5 {
+    font-weight: 600;
+    color: #333;
+}
+
+.order-summary-column {
+    background-color: var(--cor-fundo-pagina, #f8f9fa); /* Fundo da coluna de resumo */
+    border-left: 1px solid var(--cor-borda-geral, #dee2e6); /* Linha separadora opcional */
+}
+
+.order-summary {
+    /* padding já está no HTML, pode ajustar aqui se quiser */
+}
+
+.order-summary h4 {
+    color: var(--cor-primaria-barateira, #5D10B0); /* Título "Resumo da compra" roxo */
+    font-weight: 600;
+}
+/* Adicione ao seu css/checkout.css ou crie css/pagamento.css e linke no HTML */
+
+.payment-details h5, .payment-details h6 {
+    font-weight: 600;
+    color: var(--cor-texto-padrao); /* Ou sua cor de título */
+}
+
+.payment-method-options .list-group-item {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+    font-weight: 500;
+}
+
+.payment-method-options .list-group-item:hover {
+    background-color: #f8f9fa; /* Um hover sutil */
+}
+
+.payment-method-options .list-group-item input[type="radio"] {
+    margin-top: 0.1em; /* Alinhamento vertical do rádio */
+}
+
+.payment-method-options .list-group-item i { /* Ícones dos métodos de pagamento */
+    color: var(--cor-primaria-barateira, #5D10B0);
+    font-size: 1.3rem;
+    width: 25px; /* Para alinhar o texto */
+    text-align: center;
+}
+
+.payment-form-section {
+    padding: 1.5rem;
+    border: 1px solid var(--cor-borda-geral, #dee2e6);
+    border-radius: 0.375rem; /* Bootstrap padrão */
+    background-color: #fff; /* Fundo branco para a seção do formulário */
+}
+
+#creditCardForm .form-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+}
+
+#btnPagarAgora {
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: 0.75rem;
+}
+
+/* Se você tiver imagens para PayPal e Pix, pode precisar de estilos específicos */
+#paypalForm img, #pixForm img {
+    margin-top: 1rem;
+}
+
+.order-item img {
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+.order-item .fw-bold { /* Nome do produto */
+    color: var(--cor-texto-padrao);
+}
+
+.btn-aplicar-desconto {
+    background-color: var(--cor-primaria-barateira, #5D10B0);
+    color: var(--cor-texto-claro, #fff);
+    border-color: var(--cor-primaria-barateira, #5D10B0);
+}
+.btn-aplicar-desconto:hover {
+    background-color: var(--cor-primaria-hover-barateira, #4A0C8D);
+    border-color: var(--cor-primaria-hover-barateira, #4A0C8D);
+    color: var(--cor-texto-claro, #fff);
+}
+
+/* Ajustes de formulário */
+.form-control, .form-select {
+    border-radius: 0.3rem; /* Um pouco mais arredondado que o padrão Bootstrap */
+}
+.form-control:focus, .form-select:focus {
+    border-color: var(--cor-primaria-barateira, #5D10B0);
+    box-shadow: 0 0 0 0.2rem rgba(var(--cor-primaria-barateira-rgb, 93, 16, 176), 0.25);
+}

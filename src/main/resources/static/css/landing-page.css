@@ -1,0 +1,115 @@
+/* static/css/landing-page.css */
+
+body.landing-page-body {
+    padding-top: 70px; /* Ajuste se a altura do seu fixed-top header for diferente */
+}
+
+.main-header-lp .navbar-brand.barateira-logo-lp {
+    color: var(--cor-primaria-barateira, #5D10B0); /* Cor roxa do logo */
+    font-weight: 700; /* Mais forte */
+    font-size: 1.75rem; /* Um pouco maior */
+}
+
+.main-header-lp .nav-link {
+    font-weight: 500;
+    color: var(--cor-texto-padrao, #212529); /* Links do menu com cor padrão de texto */
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+.main-header-lp .nav-link:hover,
+.main-header-lp .nav-link.active {
+    color: var(--cor-primaria-barateira, #5D10B0); /* Cor roxa no hover/active */
+}
+
+.main-header-lp .btn-outline-primary {
+    border-color: var(--cor-primaria-barateira, #5D10B0);
+    color: var(--cor-primaria-barateira, #5D10B0);
+}
+.main-header-lp .btn-outline-primary:hover {
+    background-color: var(--cor-primaria-barateira, #5D10B0);
+    color: #fff;
+}
+/* O .btn-primary já pega o estilo roxo do style.css global */
+
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../img/farm.webp');
+    background-size: cover;
+    background-position: center;
+    min-height: 75vh; /* Altura da seção hero */
+    padding: 6rem 0;
+}
+
+.hero-section h1 {
+    color: #fff; /* Título principal branco sobre o fundo */
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5); /* Sombra leve no texto */
+}
+
+.hero-section .lead {
+    font-size: 1.25rem;
+    font-weight: 400;
+}
+
+.hero-section .btn-light {
+    background-color: #fff;
+    color: var(--cor-primaria-barateira, #5D10B0);
+    border-color: #fff;
+    font-weight: 600;
+}
+.hero-section .btn-light:hover {
+    background-color: #f0f0f0;
+    border-color: #f0f0f0;
+}
+.hero-section .btn-outline-light {
+    border-color: #fff;
+    color: #fff;
+    font-weight: 600;
+}
+.hero-section .btn-outline-light:hover {
+    background-color: #fff;
+    color: var(--cor-primaria-barateira, #5D10B0);
+}
+
+
+/* Seções de Conteúdo */
+.section-title {
+    color: var(--cor-primaria-barateira, #5D10B0);
+    font-weight: 700;
+    margin-bottom: 2rem; /* Mais espaço abaixo do título da seção */
+}
+
+.services-section .service-item {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.services-section .service-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.10)!important;
+}
+.services-section .service-item i { /* Ícones dos serviços */
+    color: var(--cor-primaria-barateira, #5D10B0);
+}
+
+.featured-products-section .product-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.featured-products-section .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.10)!important;
+}
+.featured-products-section .product-card .card-img-top {
+    height: 200px; /* Altura fixa para as imagens dos produtos */
+    object-fit: cover; /* Garante que a imagem cubra a área sem distorcer */
+}
+
+
+/* Rodapé */
+.main-footer {
+    background-color: var(--cor-fundo-header, #343a40); /* Reutiliza a cor do header escuro */
+}
+.main-footer p {
+    margin-bottom: 0.25rem;
+}
+.main-footer a.text-white-50:hover {
+    color: #fff !important;
+}

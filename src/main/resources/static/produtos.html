@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BARATEIRA - Produtos e Promoções</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css"> <link rel="stylesheet" href="css/produtos.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="page-produtos">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm main-header-lp">
+    <div class="container">
+        <a class="navbar-brand barateira-logo-lp" href="index.html">BARATEIRA</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#publicNavbarProdutos" aria-controls="publicNavbarProdutos" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="publicNavbarProdutos">
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="produtos.html">Produtos</a></li>
+                <li class="nav-item"><a class="nav-link" href="promocoes_publico.html">Promoções</a></li>
+                <li class="nav-item"><a class="nav-link" href="filiais_publico.html">Nossas Lojas</a></li>
+                <li class="nav-item"><a class="nav-link" href="contato.html">Contato</a></li>
+            </ul>
+            <div class="d-flex">
+                <a class="btn btn-outline-primary me-2 btn-sm" href="login.html" role="button">Login</a>
+                <a class="btn btn-primary btn-sm" href="registrar.html" role="button">Registrar</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="container mt-5 pt-5">
+
+    <section id="promocoesEmDestaque" class="py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="section-title-produtos mb-0">Promoções em Destaque</h2>
+            <a href="promocoes_publico.html" class="btn btn-sm btn-outline-primary">Ver Todas as Promoções</a>
+        </div>
+        <div id="loadingPromocoes" class="loader" style="display: none;"></div>
+        <div id="listaPromocoesAlerta" class="alert" style="display: none;" role="alert"></div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" id="promocoesGrid">
+        </div>
+    </section>
+
+    <hr class="my-5">
+
+    <section id="todosOsProdutos" class="py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="section-title-produtos mb-0">Todos os Produtos</h2>
+            <div>
+
+                <button class="btn btn-sm btn-outline-secondary me-2">Filtrar</button>
+                <select class="form-select form-select-sm d-inline-block w-auto"><option selected>Ordenar por</option></select>
+            </div>
+        </div>
+        <div id="loadingProdutos" class="loader" style="display: none;"></div>
+        <div id="listaProdutosAlerta" class="alert" style="display: none;" role="alert"></div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" id="produtosGrid">
+        </div>
+
+        <nav aria-label="Navegação de produtos" class="mt-5 d-flex justify-content-center"><ul class="pagination">...</ul></nav>
+    </section>
+
+</main>
+
+<footer class="main-footer py-4 bg-dark text-white-50 mt-5">
+    <div class="container text-center">
+        <p class="mb-0">&copy; <span id="currentYear"></span> Farmácia BARATEIRA. Todos os direitos reservados.</p>
+        <p class="mb-0 small">
+            <a href="#" class="text-white-50">Política de Privacidade</a> |
+            <a href="#" class="text-white-50">Termos de Uso</a>
+        </p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script>
+    if(document.getElementById('currentYear')) {
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    }
+    // Lógica de logout para o header público (se necessário)
+    const publicLogoutButtons = document.querySelectorAll('.main-header-lp .logout-button'); // Supondo que você adicione essa classe ao botão Sair
+    publicLogoutButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            localStorage.removeItem('jwtToken');
+            window.location.href = 'login.html';
+        });
+    });
+</script>
+<script src="js/produtos.js"></script> </body>
+</html>
