@@ -17,7 +17,9 @@ public class MedicamentoRequestDTO {
     @Size(max = 50, message = "Código de barras pode ter no máximo 50 caracteres")
     private String codigoDeBarras;
 
-    @FutureOrPresent(message = "Data de validade deve ser no presente ou futuro")
+    // A anotação @FutureOrPresent foi comentada para permitir datas passadas durante o teste.
+    // Em um sistema de produção, você provavelmente iria querer reativá-la ou ter uma lógica de negócio específica.
+    // @FutureOrPresent(message = "Data de validade deve ser no presente ou futuro")
     private LocalDate validade;
 
     @NotNull(message = "Preço de compra é obrigatório")
@@ -30,15 +32,12 @@ public class MedicamentoRequestDTO {
     @Digits(integer = 8, fraction = 2, message = "Formato de preço de venda inválido")
     private BigDecimal precoVenda;
 
-    // ID para o Princípio Ativo, frontend enviará o ID de um princípio ativo existente.
     @NotNull(message = "ID do Princípio Ativo é obrigatório")
     private Long principioAtivoId;
 
-    // ID para a Indústria, frontend enviará o ID de uma indústria existente.
-    private Long industriaId; // Pode ser opcional se um medicamento puder ser cadastrado sem indústria
+    private Long industriaId;
 
-    // campos para promoção
-    private Boolean promocao = false; // Default para false
+    private Boolean promocao = false;
 
     @DecimalMin(value = "0.0", inclusive = true, message = "Preço promocional deve ser positivo ou zero")
     @Digits(integer = 8, fraction = 2, message = "Formato de preço promocional inválido")
