@@ -1,4 +1,4 @@
-package materiamarcos.projetosecreto2.DTOs; // Ajuste o pacote se necessário
+package materiamarcos.projetosecreto2.DTOs;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class IndustriaDTO { // Pode ser IndustriaResponseDTO
+public class PrincipioAtivoResponseDTO {
     private Long id;
     private String nome;
-    private String cnpj;
 }

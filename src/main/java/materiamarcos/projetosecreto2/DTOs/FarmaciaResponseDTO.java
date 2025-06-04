@@ -7,7 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PrincipioAtivoDTO {
+public class FarmaciaResponseDTO {
     private Long id;
     private String nome;
+    private String endereco;
+    private String cidade;
+    private String uf;
+    private String cnpj;
+    private String telefone;
 }

@@ -3,7 +3,7 @@ package materiamarcos.projetosecreto2.Service; // Ajuste o pacote
 import materiamarcos.projetosecreto2.DTOs.IndustriaDTO;
 import materiamarcos.projetosecreto2.DTOs.MedicamentoRequestDTO;
 import materiamarcos.projetosecreto2.DTOs.MedicamentoResponseDTO;
-import materiamarcos.projetosecreto2.DTOs.PrincipioAtivoDTO;
+import materiamarcos.projetosecreto2.DTOs.PrincipioAtivoResponseDTO;
 import materiamarcos.projetosecreto2.Model.Industria;
 import materiamarcos.projetosecreto2.Model.Medicamento;
 import materiamarcos.projetosecreto2.Model.PrincipioAtivo;
@@ -45,7 +45,7 @@ public class MedicamentoService {
         responseDTO.setPrecoPromocional(medicamento.getPrecoPromocional());
 
         if (medicamento.getPrincipioAtivo() != null) {
-            PrincipioAtivoDTO paDTO = new PrincipioAtivoDTO();
+            PrincipioAtivoResponseDTO paDTO = new PrincipioAtivoResponseDTO();
             paDTO.setId(medicamento.getPrincipioAtivo().getId());
             paDTO.setNome(medicamento.getPrincipioAtivo().getNome());
             responseDTO.setPrincipioAtivo(paDTO);

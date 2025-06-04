@@ -19,9 +19,8 @@ public class Industria {
     @Column(nullable = false, unique = true, length = 150)
     private String nome;
 
-    @Column(length = 18) // Formato: XX.XXX.XXX/XXXX-XX
+    @Column(length = 18, unique = true) // CNPJ (ex: XX.XXX.XXX/XXXX-XX)
     private String cnpj;
-
 
     public Industria(String nome, String cnpj) {
         this.nome = nome;

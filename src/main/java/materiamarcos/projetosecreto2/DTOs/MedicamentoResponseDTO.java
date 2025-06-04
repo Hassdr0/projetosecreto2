@@ -1,10 +1,15 @@
 package materiamarcos.projetosecreto2.DTOs;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class MedicamentoResponseDTO {
     private Long id;
     private String nome;
@@ -15,6 +20,6 @@ public class MedicamentoResponseDTO {
     private BigDecimal precoVenda;
     private boolean promocao;
     private BigDecimal precoPromocional;
-    private PrincipioAtivoDTO principioAtivo; // DTO aninhado
-    private IndustriaDTO industria;         // DTO aninhado
+    private PrincipioAtivoResponseDTO principioAtivo;
+    private IndustriaDTO industria;
 }
