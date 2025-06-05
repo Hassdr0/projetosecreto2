@@ -7,6 +7,7 @@ import materiamarcos.projetosecreto2.Model.Medicamento;
 import materiamarcos.projetosecreto2.Model.PrincipioAtivo;
 import materiamarcos.projetosecreto2.Repository.EstoqueRepository;
 import materiamarcos.projetosecreto2.Repository.FarmaciaRepository;
+import materiamarcos.projetosecreto2.DTOs.AjusteEstoqueRequestDTO;
 import materiamarcos.projetosecreto2.Repository.MedicamentoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import materiamarcos.projetosecreto2.Repository.PrincipioAtivoRepository;
@@ -14,6 +15,7 @@ import materiamarcos.projetosecreto2.exception.EstoqueInsuficienteException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -118,6 +120,43 @@ public class EstoqueService {
 
 
         Estoque estoqueSalvo = estoqueRepository.save(estoqueParaSalvar);
+        return converterParaEstoqueResponseDTO(estoqueSalvo);
+    }
+
+    @Transactional
+    public EstoqueResponseDTO ajustarEstoque(AjusteEstoqueRequestDTO requestDTO) throws EstoqueInsuficienteException {
+        if (requestDTO.getQuantidadeAjuste() == 0) {
+            throw new IllegalArgumentException("Quantidade para ajuste não pode ser zero.");
+        }
+
+        Medicamento medicamento = medicamentoRepository.findById(requestDTO.getMedicamentoId())
+                .orElseThrow(() -> new EntityNotFoundException("Medicamento com ID " + requestDTO.getMedicamentoId() + " não encontrado."));
+
+        Farmacia farmacia = farmaciaRepository.findById(requestDTO.getFarmaciaId())
+                .orElseThrow(() -> new EntityNotFoundException("Farmácia com ID " + requestDTO.getFarmaciaId() + " não encontrada."));
+
+        Estoque estoque;
+        String lote = requestDTO.getLote();
+        if (StringUtils.hasText(lote)) {
+            estoque = estoqueRepository.findByMedicamentoAndFarmaciaAndLote(medicamento, farmacia, lote)
+                    .orElseThrow(() -> new EntityNotFoundException("Estoque não encontrado para o lote '" + lote + "'."));
+        } else {
+            estoque = estoqueRepository.findByMedicamentoAndFarmacia(medicamento, farmacia).stream()
+                    .findFirst() // Pega o primeiro registro de estoque encontrado para este item/farmácia
+                    .orElseThrow(() -> new EntityNotFoundException("Nenhum registro de estoque encontrado para o medicamento na farmácia especificada."));
+        }
+
+        int quantidadeFinal = estoque.getQuantidade() + requestDTO.getQuantidadeAjuste();
+
+        if (quantidadeFinal < 0) {
+            throw new EstoqueInsuficienteException("Estoque insuficiente para o ajuste. Disponível: " + estoque.getQuantidade() + ", Ajuste solicitado: " + requestDTO.getQuantidadeAjuste());
+        }
+
+        estoque.setQuantidade(quantidadeFinal);
+        Estoque estoqueSalvo = estoqueRepository.save(estoque);
+
+        System.out.println("Estoque ajustado para Medicamento ID " + medicamento.getId() + " na Farmácia ID " + farmacia.getId() + ". Nova quantidade: " + quantidadeFinal);
+
         return converterParaEstoqueResponseDTO(estoqueSalvo);
     }
 

@@ -1,5 +1,6 @@
 package materiamarcos.projetosecreto2.Controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import materiamarcos.projetosecreto2.DTOs.JwtResponseDTO;
 import materiamarcos.projetosecreto2.DTOs.LoginRequestDTO;
 import materiamarcos.projetosecreto2.DTOs.RegistroRequestDTO;
@@ -23,6 +24,7 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/registrar")
+    @Operation(summary = "Registro do usuario")
     public ResponseEntity<?> registrarUsuario(@Valid @RequestBody RegistroRequestDTO registroRequestDTO) {
         try {
             UsuarioResponseDTO usuarioRegistrado = authService.registrarUsuario(registroRequestDTO);
@@ -35,6 +37,7 @@ public class AuthController {
         }
     }
     @PostMapping("/login")
+    @Operation(summary = "Login do usuario")
     public ResponseEntity<?> loginUsuario(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
         try {
             String usuarioLogado = authService.loginUsuarioERetornarToken(loginRequestDTO);
