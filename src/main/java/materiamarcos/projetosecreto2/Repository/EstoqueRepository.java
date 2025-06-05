@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface EstoqueRepository extends JpaRepository<Estoque, Long> {
     Optional<Estoque> findByMedicamentoAndFarmaciaAndLote(Medicamento medicamento, Farmacia farmacia, String lote);
-    Optional<Estoque> findByMedicamentoAndFarmacia(Medicamento medicamento, Farmacia farmacia); // Se não usar lote ou para estoque geral
+    List<Estoque> findByMedicamentoAndFarmacia(Medicamento medicamento, Farmacia farmacia); // Se não usar lote ou para estoque geral
     List<Estoque> findByMedicamento(Medicamento medicamento);
     List<Estoque> findByFarmacia(Farmacia farmacia);
     List<Estoque> findByMedicamentoAndQuantidadeLessThanEqual(Medicamento medicamento, Integer quantidade);

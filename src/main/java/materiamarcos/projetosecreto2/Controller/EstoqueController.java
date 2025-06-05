@@ -2,22 +2,22 @@ package materiamarcos.projetosecreto2.Controller;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
-import materiamarcos.projetosecreto2.DTOs.EntradaEstoqueRequestDTO;
-import materiamarcos.projetosecreto2.DTOs.ErrorResponseDTO; // Reutilize
-import materiamarcos.projetosecreto2.DTOs.EstoqueResponseDTO;
+import materiamarcos.projetosecreto2.DTOs.*;
 import materiamarcos.projetosecreto2.Service.EstoqueService;
+import materiamarcos.projetosecreto2.exception.EstoqueInsuficienteException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
+import materiamarcos.projetosecreto2.exception.EstoqueInsuficienteException;
 
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map; // Para um DTO de placeholder simples
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/estoque")
@@ -27,29 +27,15 @@ public class EstoqueController {
     private EstoqueService estoqueService;
 
 
+
     private ResponseEntity<ErrorResponseDTO> criarRespostaDeErro(HttpStatus status, String errorMsgKey, String message, HttpServletRequest request) {
         ErrorResponseDTO errorResponse = new ErrorResponseDTO(new Date().getTime(), status.value(), errorMsgKey, message, request.getRequestURI());
         return new ResponseEntity<>(errorResponse, status);
     }
 
-    @GetMapping
-    public ResponseEntity<?> listarEstoque(HttpServletRequest httpRequest) {
-        // TODO: Chamar o EstoqueService para buscar dados reais
-        try {
-            System.out.println("API GET /api/estoque chamada (placeholder)");
-            // Simula uma resposta de sucesso com dados mocados
-            List<Map<String, Object>> placeholderEstoque = Collections.singletonList(
-                    Map.of("medicamentoId", 1, "nomeMedicamento", "Dipirona Placeholder", "quantidade", 100, "filial", "Principal")
-            );
-            return ResponseEntity.ok(placeholderEstoque);
-        } catch (Exception e) {
-            return criarRespostaDeErro(HttpStatus.INTERNAL_SERVER_ERROR, "Erro Interno", "Não foi possível listar o estoque.", httpRequest);
-        }
-    }
-
     @PostMapping
     public ResponseEntity<?> adicionarAoEstoque(@RequestBody Map<String, Object> itemEstoqueDTO, HttpServletRequest httpRequest) { // Use um DTO real depois
-        // TODO: Chamar o EstoqueService para adicionar item
+
         try {
             System.out.println("API POST /api/estoque chamada com dados: " + itemEstoqueDTO.toString());
             // Simula uma resposta de sucesso
@@ -61,7 +47,7 @@ public class EstoqueController {
 
     @GetMapping("/{medicamentoId}")
     public ResponseEntity<?> buscarEstoquePorMedicamento(@PathVariable Long medicamentoId, HttpServletRequest httpRequest) {
-        // TODO: Chamar o EstoqueService
+
         try {
             System.out.println("API GET /api/estoque/" + medicamentoId + " chamada (placeholder)");
             return ResponseEntity.ok(Map.of("medicamentoId", medicamentoId, "quantidade", 50, "message", "Placeholder: Detalhes do estoque para o medicamento " + medicamentoId));
@@ -70,26 +56,129 @@ public class EstoqueController {
         }
     }
 
-    @PostMapping("/entrada") // URL específica para entrada
-    public ResponseEntity<?> registrarEntradaNoEstoque( // Este endpoint pode precisar ser mais específico, ex: /medicamento/{medicamentoId}/filial/{filialId}
+    @PostMapping("/entrada")
+    public ResponseEntity<?> registrarEntradaNoEstoque(
             @Valid @RequestBody EntradaEstoqueRequestDTO requestDTO,
             HttpServletRequest httpRequest) {
         try {
-            // Chama o método do serviço que você já implementou
+
             EstoqueResponseDTO estoqueAtualizado = estoqueService.registrarEntradaEstoque(requestDTO);
-            return new ResponseEntity<>(estoqueAtualizado, HttpStatus.CREATED); // Retorna 201 com o estado do estoque
+            return new ResponseEntity<>(estoqueAtualizado, HttpStatus.CREATED);
         } catch (EntityNotFoundException ex) {
-            // Se o Medicamento ou Farmácia não forem encontrados pelo serviço
+
             return criarRespostaDeErro(HttpStatus.NOT_FOUND, "Recurso não encontrado", ex.getMessage(), httpRequest);
         } catch (IllegalArgumentException ex) {
-            // Para outros erros de lógica de negócio vindos do serviço
+
             return criarRespostaDeErro(HttpStatus.BAD_REQUEST, "Requisição inválida", ex.getMessage(), httpRequest);
         } catch (DataIntegrityViolationException ex) {
-            // Se houver algum problema de integridade no banco
+
             return criarRespostaDeErro(HttpStatus.CONFLICT, "Conflito de dados", "Erro de integridade de dados ao registrar entrada no estoque.", httpRequest);
         } catch (Exception ex) {
-            // log.error("Erro ao registrar entrada no estoque: ", ex); // Boa prática logar
+
             return criarRespostaDeErro(HttpStatus.INTERNAL_SERVER_ERROR, "Erro Interno", "Ocorreu um erro inesperado ao registrar entrada no estoque.", httpRequest);
         }
+    }
+    //LISTAR TODO O ESTOQUE DE UMA FILIAL
+
+    @GetMapping("/filial/{farmaciaId}")
+    public ResponseEntity<?> listarEstoquePorFarmacia(
+            @PathVariable Long farmaciaId,
+            HttpServletRequest httpRequest) {
+        try {
+            List<EstoqueResponseDTO> estoques = estoqueService.consultarEstoquePorFarmacia(farmaciaId);
+            if (estoques.isEmpty()) {
+
+                return ResponseEntity.ok(Collections.emptyList());
+            }
+            return ResponseEntity.ok(estoques);
+        } catch (EntityNotFoundException ex) {
+            return criarRespostaDeErro(HttpStatus.NOT_FOUND, "Recurso não encontrado", ex.getMessage(), httpRequest);
+        } catch (Exception ex) {
+
+            return criarRespostaDeErro(HttpStatus.INTERNAL_SERVER_ERROR, "Erro Interno", "Ocorreu um erro inesperado ao listar o estoque da filial.", httpRequest);
+        }
+    }
+    //BUSCAR ESTOQUE DE UM MEDICAMENTO ESPECÍFICO EM UMA FILIAL ESPECÍFICA
+
+    @GetMapping("/medicamento/{medicamentoId}/filial/{farmaciaId}")
+    public ResponseEntity<?> buscarEstoquePorMedicamentoEFarmacia(
+            @PathVariable Long medicamentoId,
+            @PathVariable Long farmaciaId,
+            HttpServletRequest httpRequest) {
+        try {
+            List<EstoqueResponseDTO> estoques = estoqueService.consultarEstoquePorMedicamentoEFarmacia(medicamentoId, farmaciaId);
+
+            return ResponseEntity.ok(estoques);
+        } catch (EntityNotFoundException ex) {
+            return criarRespostaDeErro(HttpStatus.NOT_FOUND, "Recurso não encontrado", ex.getMessage(), httpRequest);
+        } catch (Exception ex) {
+
+            return criarRespostaDeErro(HttpStatus.INTERNAL_SERVER_ERROR, "Erro Interno", "Ocorreu um erro inesperado ao buscar o estoque.", httpRequest);
+        }
+    }
+
+    @GetMapping("/medicamento/{medicamentoId}")
+    public ResponseEntity<?> listarEstoquePorMedicamento(
+            @PathVariable Long medicamentoId,
+            HttpServletRequest httpRequest) {
+        try {
+            List<EstoqueResponseDTO> estoques = estoqueService.consultarEstoquePorMedicamento(medicamentoId);
+            if (estoques.isEmpty()) {
+                return ResponseEntity.ok(Collections.emptyList());
+            }
+            return ResponseEntity.ok(estoques);
+        } catch (EntityNotFoundException ex) { // Se o Medicamento não for encontrado
+            return criarRespostaDeErro(HttpStatus.NOT_FOUND, "Recurso não encontrado", ex.getMessage(), httpRequest);
+        } catch (Exception ex) {
+            // log.error("Erro ao listar estoque por medicamento: {}", medicamentoId, ex);
+            return criarRespostaDeErro(HttpStatus.INTERNAL_SERVER_ERROR, "Erro Interno", "Ocorreu um erro inesperado ao listar o estoque do medicamento.", httpRequest);
+        }
+    }
+
+    //AJUSTE MANUAL DE ESTOQUE (incluindo baixa)
+    @PostMapping("/ajuste")
+    public ResponseEntity<?> ajustarEstoque(
+            @Valid @RequestBody AjusteEstoqueRequestDTO requestDTO,
+            HttpServletRequest httpRequest) {
+        try {
+
+            if (requestDTO.getQuantidadeAjuste() < 0) {
+
+                if (requestDTO.getMedicamentoId() == null || requestDTO.getFarmaciaId() == null) {
+                    return criarRespostaDeErro(HttpStatus.BAD_REQUEST, "Dados incompletos", "MedicamentoID e FarmaciaID são obrigatórios para baixa.", httpRequest);
+                }
+                estoqueService.darBaixaEstoque(
+                        requestDTO.getMedicamentoId(),
+                        requestDTO.getFarmaciaId(),
+                        requestDTO.getLote(),
+                        Math.abs(requestDTO.getQuantidadeAjuste())
+                );
+                return ResponseEntity.ok().body("Baixa de estoque realizada com sucesso. Motivo: " + requestDTO.getMotivoAjuste());
+
+            } else if (requestDTO.getQuantidadeAjuste() > 0) {
+
+                return criarRespostaDeErro(HttpStatus.NOT_IMPLEMENTED, "Não implementado", "Ajuste de entrada manual ainda não implementado por este endpoint.", httpRequest);
+            } else {
+                return criarRespostaDeErro(HttpStatus.BAD_REQUEST, "Dados inválidos", "Quantidade para ajuste não pode ser zero.", httpRequest);
+            }
+
+        } catch (EstoqueInsuficienteException ex) {
+            return criarRespostaDeErro(HttpStatus.CONFLICT, "Estoque insuficiente", ex.getMessage(), httpRequest);
+        } catch (EntityNotFoundException ex) {
+            return criarRespostaDeErro(HttpStatus.NOT_FOUND, "Recurso não encontrado", ex.getMessage(), httpRequest);
+        } catch (IllegalArgumentException ex) {
+            return criarRespostaDeErro(HttpStatus.BAD_REQUEST, "Requisição inválida", ex.getMessage(), httpRequest);
+        } catch (Exception ex) {
+
+            return criarRespostaDeErro(HttpStatus.INTERNAL_SERVER_ERROR, "Erro Interno", "Ocorreu um erro inesperado ao ajustar o estoque.", httpRequest);
+        }
+    }
+    @GetMapping("/alertas-minimo")
+    public ResponseEntity<List<AlertaEstoqueDTO>> getAlertasEstoqueMinimo() {
+        List<AlertaEstoqueDTO> alertas = estoqueService.verificarAlertasEstoqueMinimo();
+        if (alertas.isEmpty()) {
+            return ResponseEntity.noContent().build(); // 204 se não houver alertas
+        }
+        return ResponseEntity.ok(alertas);
     }
 }

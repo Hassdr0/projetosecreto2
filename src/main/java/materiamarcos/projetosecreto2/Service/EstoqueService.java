@@ -1,23 +1,23 @@
 package materiamarcos.projetosecreto2.Service;
 
-import materiamarcos.projetosecreto2.DTOs.EntradaEstoqueRequestDTO;
-import materiamarcos.projetosecreto2.DTOs.EstoqueResponseDTO;
-import materiamarcos.projetosecreto2.DTOs.FarmaciaResponseDTO;
-import materiamarcos.projetosecreto2.DTOs.MedicamentoResponseDTO;
-import materiamarcos.projetosecreto2.DTOs.PrincipioAtivoResponseDTO;
-import materiamarcos.projetosecreto2.DTOs.IndustriaDTO;
+import materiamarcos.projetosecreto2.DTOs.*;
 import materiamarcos.projetosecreto2.Model.Estoque;
 import materiamarcos.projetosecreto2.Model.Farmacia;
 import materiamarcos.projetosecreto2.Model.Medicamento;
+import materiamarcos.projetosecreto2.Model.PrincipioAtivo;
 import materiamarcos.projetosecreto2.Repository.EstoqueRepository;
 import materiamarcos.projetosecreto2.Repository.FarmaciaRepository;
 import materiamarcos.projetosecreto2.Repository.MedicamentoRepository;
 import jakarta.persistence.EntityNotFoundException;
+import materiamarcos.projetosecreto2.Repository.PrincipioAtivoRepository;
+import materiamarcos.projetosecreto2.exception.EstoqueInsuficienteException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +33,10 @@ public class EstoqueService {
     @Autowired
     private FarmaciaRepository farmaciaRepository;
 
-    // Método Helper para converter Entidade Estoque para EstoqueResponseDTO
+    @Autowired
+    private PrincipioAtivoRepository principioAtivoRepository;
+
+
     private EstoqueResponseDTO converterParaEstoqueResponseDTO(Estoque estoque) {
         if (estoque == null) return null;
 
@@ -103,7 +106,7 @@ public class EstoqueService {
             }
             estoqueParaSalvar = estoqueExistente;
         } else {
-            // Se não existe, cria um novo registro de estoque
+
             estoqueParaSalvar = new Estoque();
             estoqueParaSalvar.setMedicamento(medicamento);
             estoqueParaSalvar.setFarmacia(farmacia);
@@ -116,6 +119,132 @@ public class EstoqueService {
 
         Estoque estoqueSalvo = estoqueRepository.save(estoqueParaSalvar);
         return converterParaEstoqueResponseDTO(estoqueSalvo);
+    }
+
+    @Transactional(readOnly = true)
+    public List<EstoqueResponseDTO> consultarEstoquePorFarmacia(Long farmaciaId) {
+        Farmacia farmacia = farmaciaRepository.findById(farmaciaId)
+                .orElseThrow(() -> new EntityNotFoundException("Farmácia com ID " + farmaciaId + " não encontrada."));
+
+        List<Estoque> estoques = estoqueRepository.findByFarmacia(farmacia);
+        if (estoques.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return estoques.stream()
+                .map(this::converterParaEstoqueResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<EstoqueResponseDTO> consultarEstoquePorMedicamentoEFarmacia(Long medicamentoId, Long farmaciaId) {
+        Medicamento medicamento = medicamentoRepository.findById(medicamentoId)
+                .orElseThrow(() -> new EntityNotFoundException("Medicamento com ID " + medicamentoId + " não encontrado."));
+
+        Farmacia farmacia = farmaciaRepository.findById(farmaciaId)
+                .orElseThrow(() -> new EntityNotFoundException("Farmácia com ID " + farmaciaId + " não encontrada."));
+
+        List<Estoque> estoques = estoqueRepository.findByMedicamentoAndFarmacia(medicamento, farmacia);
+        if (estoques.isEmpty()) {
+
+            return Collections.emptyList();
+        }
+        return estoques.stream()
+                .map(this::converterParaEstoqueResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<EstoqueResponseDTO> consultarEstoquePorMedicamento(Long medicamentoId) {
+        Medicamento medicamento = medicamentoRepository.findById(medicamentoId)
+                .orElseThrow(() -> new EntityNotFoundException("Medicamento com ID " + medicamentoId + " não encontrado."));
+
+        List<Estoque> estoques = estoqueRepository.findByMedicamento(medicamento);
+        if (estoques.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return estoques.stream()
+                .map(this::converterParaEstoqueResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void darBaixaEstoque(Long medicamentoId, Long farmaciaId, String lote, int quantidadeBaixa) throws EstoqueInsuficienteException {
+        if (quantidadeBaixa <= 0) {
+            throw new IllegalArgumentException("Quantidade para baixa deve ser positiva.");
+        }
+
+        Medicamento medicamento = medicamentoRepository.findById(medicamentoId)
+                .orElseThrow(() -> new EntityNotFoundException("Medicamento com ID " + medicamentoId + " não encontrado para baixa de estoque."));
+
+        Farmacia farmacia = farmaciaRepository.findById(farmaciaId)
+                .orElseThrow(() -> new EntityNotFoundException("Farmácia com ID " + farmaciaId + " não encontrada para baixa de estoque."));
+
+        Estoque estoque;
+        if (lote != null && !lote.isBlank()) {
+            estoque = estoqueRepository.findByMedicamentoAndFarmaciaAndLote(medicamento, farmacia, lote)
+                    .orElseThrow(() -> new EntityNotFoundException("Estoque não encontrado para o medicamento ID " + medicamentoId + ", farmácia ID " + farmaciaId + " e lote '" + lote + "'."));
+        } else {
+            // Se não controlar por lote na baixa, ou se o lote não for especificado,
+            // pode precisar de uma lógica para encontrar o registro de estoque apropriado.
+            // Por simplicidade, vamos assumir que se o lote não é fornecido,
+            // Em um sistema real, pode querer pegar o lote mais antigo (FIFO) ou um lote qualquer com saldo.
+            List<Estoque> estoquesDisponiveis = estoqueRepository.findByMedicamentoAndFarmacia(medicamento, farmacia);
+            if (estoquesDisponiveis.isEmpty()) {
+                throw new EntityNotFoundException("Nenhum registro de estoque encontrado para o medicamento ID " + medicamentoId + " na farmácia ID " + farmaciaId + ".");
+            }
+            // Para este exemplo, vamos pegar o primeiro que tiver saldo suficiente, ou o primeiro da lista.
+            // Esta lógica precisaria ser mais robusta em produção.
+            estoque = estoquesDisponiveis.stream()
+                    .filter(e -> e.getQuantidade() >= quantidadeBaixa)
+                    .findFirst()
+                    .orElse(estoquesDisponiveis.get(0));
+        }
+
+        if (estoque.getQuantidade() < quantidadeBaixa) {
+            throw new EstoqueInsuficienteException("Estoque insuficiente para o medicamento '" + medicamento.getNome() +
+                    (lote != null ? "' (Lote: " + lote + ")" : "") +
+                    " na farmácia '" + farmacia.getNome() + "'. Disponível: " + estoque.getQuantidade() + ", Requerido: " + quantidadeBaixa);
+        }
+
+        estoque.setQuantidade(estoque.getQuantidade() - quantidadeBaixa);
+        // dataUltimaAtualizacao será atualizada pelo @PreUpdate
+        estoqueRepository.save(estoque);
+
+        System.out.println("Baixa de " + quantidadeBaixa + " unidade(s) do medicamento '" + medicamento.getNome() +
+                (lote != null ? "' (Lote: " + lote + ")" : "") +
+                " na farmácia '" + farmacia.getNome() + "'. Novo saldo: " + estoque.getQuantidade());
+
+        // TODO: Chamar verificação de estoque mínimo aqui
+        // verificarEAlertarEstoqueMinimoPorPrincipioAtivo(medicamento.getPrincipioAtivo().getId(), farmacia.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public List<AlertaEstoqueDTO> verificarAlertasEstoqueMinimo() {
+        List<AlertaEstoqueDTO> alertas = new ArrayList<>();
+        List<PrincipioAtivo> todosPrincipiosAtivos = principioAtivoRepository.findAll();
+
+        for (PrincipioAtivo pa : todosPrincipiosAtivos) {
+            if (pa.getEstoqueMinimo() != null && pa.getEstoqueMinimo() > 0) {
+
+                Integer quantidadeAtual = estoqueRepository.sumQuantidadeByPrincipioAtivoId(pa.getId());
+                if (quantidadeAtual == null) {
+                    quantidadeAtual = 0;
+                }
+
+                if (quantidadeAtual <= pa.getEstoqueMinimo()) {
+                    alertas.add(new AlertaEstoqueDTO(
+                            pa.getId(),
+                            pa.getNome(),
+                            quantidadeAtual,
+                            pa.getEstoqueMinimo(),
+                            "Estoque baixo para o princípio ativo."
+                    ));
+
+                    System.out.println("ALERTA: Estoque baixo para Princípio Ativo '" + pa.getNome() + "'. Atual: " + quantidadeAtual + ", Mínimo: " + pa.getEstoqueMinimo());
+                }
+            }
+        }
+        return alertas;
     }
 
     // TODO: Adicionar outros métodos de serviço para Estoque:

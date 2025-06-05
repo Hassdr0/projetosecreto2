@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface PrincipioAtivoRepository extends JpaRepository<PrincipioAtivo, Long> {
-    // Util para evitar duplicatas ou encontrar pelo nome
+
 
     Optional<PrincipioAtivo> findByNomeIgnoreCase(String nome);
     boolean existsByNomeIgnoreCase(String nome);
