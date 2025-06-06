@@ -206,6 +206,15 @@ public class EstoqueService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<EstoqueResponseDTO> listarTodoEstoque() {
+        List<Estoque> todosOsEstoques = estoqueRepository.findAll();
+
+        return todosOsEstoques.stream()
+                .map(this::converterParaEstoqueResponseDTO)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public void darBaixaEstoque(Long medicamentoId, Long farmaciaId, String lote, int quantidadeBaixa) throws EstoqueInsuficienteException {
         if (quantidadeBaixa <= 0) {

@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 import materiamarcos.projetosecreto2.exception.EstoqueInsuficienteException;
+import materiamarcos.projetosecreto2.DTOs.EstoqueResponseDTO;
 
 
 import java.util.Collections;
@@ -31,6 +32,22 @@ public class EstoqueController {
     private ResponseEntity<ErrorResponseDTO> criarRespostaDeErro(HttpStatus status, String errorMsgKey, String message, HttpServletRequest request) {
         ErrorResponseDTO errorResponse = new ErrorResponseDTO(new Date().getTime(), status.value(), errorMsgKey, message, request.getRequestURI());
         return new ResponseEntity<>(errorResponse, status);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> listarEstoque() {
+        try {
+            List<EstoqueResponseDTO> todoEstoque = estoqueService.listarTodoEstoque();
+            if (todoEstoque.isEmpty()) {
+
+                return ResponseEntity.ok(Collections.emptyList());
+            }
+            return ResponseEntity.ok(todoEstoque); // Retorna 200 OK com a lista de estoque
+        } catch (Exception ex) {
+
+            HttpServletRequest request = null;
+            return criarRespostaDeErro(HttpStatus.INTERNAL_SERVER_ERROR, "Erro Interno", "Não foi possível listar o estoque.", request);
+        }
     }
 
     @PostMapping
