@@ -1,4 +1,4 @@
-package materiamarcos.projetosecreto2.Service; // Ajuste o pacote
+package materiamarcos.projetosecreto2.Service; // Verifique se o pacote está correto
 
 import materiamarcos.projetosecreto2.DTOs.IndustriaDTO;
 import materiamarcos.projetosecreto2.DTOs.MedicamentoRequestDTO;
@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode; // Import para arredondamento
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,14 +26,11 @@ public class MedicamentoService {
 
     @Autowired
     private MedicamentoRepository medicamentoRepository;
-
     @Autowired
     private PrincipioAtivoRepository principioAtivoRepository;
-
     @Autowired
     private IndustriaRepository industriaRepository;
 
-    // Método helper privado para converter Entidade Medicamento para MedicamentoResponseDTO
     private MedicamentoResponseDTO converterParaResponseDTO(Medicamento medicamento) {
         MedicamentoResponseDTO responseDTO = new MedicamentoResponseDTO();
         responseDTO.setId(medicamento.getId());
@@ -45,17 +44,19 @@ public class MedicamentoService {
         responseDTO.setPrecoPromocional(medicamento.getPrecoPromocional());
 
         if (medicamento.getPrincipioAtivo() != null) {
-            PrincipioAtivoResponseDTO paDTO = new PrincipioAtivoResponseDTO();
-            paDTO.setId(medicamento.getPrincipioAtivo().getId());
-            paDTO.setNome(medicamento.getPrincipioAtivo().getNome());
+            PrincipioAtivoResponseDTO paDTO = new PrincipioAtivoResponseDTO(
+                    medicamento.getPrincipioAtivo().getId(),
+                    medicamento.getPrincipioAtivo().getNome()
+            );
             responseDTO.setPrincipioAtivo(paDTO);
         }
 
         if (medicamento.getIndustria() != null) {
-            IndustriaDTO indDTO = new IndustriaDTO();
-            indDTO.setId(medicamento.getIndustria().getId());
-            indDTO.setNome(medicamento.getIndustria().getNome());
-            indDTO.setCnpj(medicamento.getIndustria().getCnpj());
+            IndustriaDTO indDTO = new IndustriaDTO(
+                    medicamento.getIndustria().getId(),
+                    medicamento.getIndustria().getNome(),
+                    medicamento.getIndustria().getCnpj()
+            );
             responseDTO.setIndustria(indDTO);
         }
         return responseDTO;
@@ -87,14 +88,27 @@ public class MedicamentoService {
         novoMedicamento.setPrincipioAtivo(principioAtivo);
         novoMedicamento.setIndustria(industria);
 
-        if (requestDTO.getPromocao() != null) {
-            novoMedicamento.setPromocao(requestDTO.getPromocao());
-            if (requestDTO.getPromocao() && requestDTO.getPrecoPromocional() != null) {
-                // TODO: Adicionar validação da regra de negócio da promoção aqui
-                novoMedicamento.setPrecoPromocional(requestDTO.getPrecoPromocional());
-            } else {
-                novoMedicamento.setPrecoPromocional(null);
+        // Aplica lógica de promoção também na criação, se informado
+        if (Boolean.TRUE.equals(requestDTO.getPromocao())) {
+            if (medicamentoRepository.existsByPrincipioAtivoAndPromocaoIsTrue(principioAtivo)) {
+                throw new IllegalArgumentException("Já existe um medicamento com o mesmo princípio ativo ('" + principioAtivo.getNome() + "') em promoção.");
             }
+
+            if (requestDTO.getPrecoPromocional() == null || requestDTO.getPrecoPromocional().compareTo(BigDecimal.ZERO) <= 0) {
+                throw new IllegalArgumentException("Preço promocional é obrigatório e deve ser positivo para ativar uma promoção.");
+            }
+
+            BigDecimal precoMinimoPromocao = novoMedicamento.getPrecoCompra().multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP);
+            if (requestDTO.getPrecoPromocional().compareTo(precoMinimoPromocao) < 0) {
+                throw new IllegalArgumentException("O preço promocional (R$ " + requestDTO.getPrecoPromocional() +
+                        ") não pode ser inferior a 110% do preço de compra (R$ " + precoMinimoPromocao + ").");
+            }
+
+            novoMedicamento.setPromocao(true);
+            novoMedicamento.setPrecoPromocional(requestDTO.getPrecoPromocional());
+        } else {
+            novoMedicamento.setPromocao(false);
+            novoMedicamento.setPrecoPromocional(null);
         }
 
         Medicamento medicamentoSalvo = medicamentoRepository.save(novoMedicamento);
@@ -104,9 +118,6 @@ public class MedicamentoService {
     @Transactional(readOnly = true)
     public List<MedicamentoResponseDTO> listarTodos() {
         List<Medicamento> medicamentos = medicamentoRepository.findAll();
-        if (medicamentos.isEmpty()) {
-            return Collections.emptyList();
-        }
         return medicamentos.stream()
                 .map(this::converterParaResponseDTO)
                 .collect(Collectors.toList());
@@ -121,49 +132,69 @@ public class MedicamentoService {
 
     @Transactional
     public MedicamentoResponseDTO atualizarMedicamento(Long id, MedicamentoRequestDTO requestDTO) {
-        Medicamento medicamentoExistente = medicamentoRepository.findById(id)
+        Medicamento existente = medicamentoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Medicamento com ID " + id + " não encontrado para atualização."));
 
-        if (requestDTO.getCodigoDeBarras() != null &&
-                !requestDTO.getCodigoDeBarras().isBlank() &&
-                !requestDTO.getCodigoDeBarras().equals(medicamentoExistente.getCodigoDeBarras())) {
+        // Verificação de código de barras duplicado (apenas se for alterado)
+        if (requestDTO.getCodigoDeBarras() != null && !requestDTO.getCodigoDeBarras().isBlank() &&
+                !requestDTO.getCodigoDeBarras().equals(existente.getCodigoDeBarras())) {
             if (medicamentoRepository.existsByCodigoDeBarras(requestDTO.getCodigoDeBarras())) {
                 throw new IllegalArgumentException("Outro medicamento já existe com o código de barras: " + requestDTO.getCodigoDeBarras());
             }
-            medicamentoExistente.setCodigoDeBarras(requestDTO.getCodigoDeBarras());
+            existente.setCodigoDeBarras(requestDTO.getCodigoDeBarras());
         }
 
+        // Atualiza campos básicos
+        existente.setNome(requestDTO.getNome());
+        existente.setDescricao(requestDTO.getDescricao());
+        existente.setValidade(requestDTO.getValidade());
+        existente.setPrecoCompra(requestDTO.getPrecoCompra());
+        existente.setPrecoVenda(requestDTO.getPrecoVenda());
+
+        // Atualiza entidades relacionadas se IDs forem fornecidos
         if (requestDTO.getPrincipioAtivoId() != null) {
             PrincipioAtivo pa = principioAtivoRepository.findById(requestDTO.getPrincipioAtivoId())
                     .orElseThrow(() -> new EntityNotFoundException("Princípio Ativo com ID " + requestDTO.getPrincipioAtivoId() + " não encontrado."));
-            medicamentoExistente.setPrincipioAtivo(pa);
+            existente.setPrincipioAtivo(pa);
         }
 
         if (requestDTO.getIndustriaId() != null) {
             Industria ind = industriaRepository.findById(requestDTO.getIndustriaId())
                     .orElseThrow(() -> new EntityNotFoundException("Indústria com ID " + requestDTO.getIndustriaId() + " não encontrada."));
-            medicamentoExistente.setIndustria(ind);
+            existente.setIndustria(ind);
         } else {
-            medicamentoExistente.setIndustria(null);
+            existente.setIndustria(null);
         }
 
-        medicamentoExistente.setNome(requestDTO.getNome());
-        medicamentoExistente.setDescricao(requestDTO.getDescricao());
-        medicamentoExistente.setValidade(requestDTO.getValidade());
-        medicamentoExistente.setPrecoCompra(requestDTO.getPrecoCompra());
-        medicamentoExistente.setPrecoVenda(requestDTO.getPrecoVenda());
-
+        // --- LÓGICA DE PROMOÇÃO IMPLEMENTADA ---
         if (requestDTO.getPromocao() != null) {
-            medicamentoExistente.setPromocao(requestDTO.getPromocao());
-            if (requestDTO.getPromocao() && requestDTO.getPrecoPromocional() != null) {
-                // TODO: Adicionar validação da regra de negócio da promoção aqui
-                medicamentoExistente.setPrecoPromocional(requestDTO.getPrecoPromocional());
-            } else {
-                medicamentoExistente.setPrecoPromocional(null);
+            if (Boolean.TRUE.equals(requestDTO.getPromocao())) {
+                // Regra 1: Não permitir duas promoções para o mesmo princípio ativo.
+                if (medicamentoRepository.existsByPrincipioAtivoAndPromocaoIsTrueAndIdNot(existente.getPrincipioAtivo(), id)) {
+                    throw new IllegalArgumentException("Já existe um medicamento com o mesmo princípio ativo ('" + existente.getPrincipioAtivo().getNome() + "') em promoção.");
+                }
+
+                // Regra 2: Garantir que o preço promocional é válido e respeita a margem de 10%.
+                if (requestDTO.getPrecoPromocional() == null || requestDTO.getPrecoPromocional().compareTo(BigDecimal.ZERO) <= 0) {
+                    throw new IllegalArgumentException("Preço promocional é obrigatório e deve ser positivo para ativar uma promoção.");
+                }
+
+                BigDecimal precoMinimoPromocao = existente.getPrecoCompra().multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP);
+                if (requestDTO.getPrecoPromocional().compareTo(precoMinimoPromocao) < 0) {
+                    throw new IllegalArgumentException("O preço promocional (R$ " + requestDTO.getPrecoPromocional() +
+                            ") não pode ser inferior a 110% do preço de compra (R$ " + precoMinimoPromocao + ").");
+                }
+
+                existente.setPromocao(true);
+                existente.setPrecoPromocional(requestDTO.getPrecoPromocional());
+
+            } else { // Se requestDTO.getPromocao() for false
+                existente.setPromocao(false);
+                existente.setPrecoPromocional(null);
             }
         }
 
-        Medicamento medicamentoAtualizado = medicamentoRepository.save(medicamentoExistente);
+        Medicamento medicamentoAtualizado = medicamentoRepository.save(existente);
         return converterParaResponseDTO(medicamentoAtualizado);
     }
 
@@ -172,6 +203,7 @@ public class MedicamentoService {
         if (!medicamentoRepository.existsById(id)) {
             throw new EntityNotFoundException("Medicamento com ID " + id + " não encontrado para deleção.");
         }
+        // TODO: Adicionar verificação se medicamento está em alguma Venda antes de deletar.
         medicamentoRepository.deleteById(id);
     }
 }

@@ -12,6 +12,8 @@ import java.util.Optional;
 
 @Repository
 public interface MedicamentoRepository extends JpaRepository<Medicamento, Long> {
+    boolean existsByPrincipioAtivoAndPromocaoIsTrueAndIdNot(PrincipioAtivo principioAtivo, Long id);
+    boolean existsByPrincipioAtivoAndPromocaoIsTrue(PrincipioAtivo principioAtivo);
     Optional<Medicamento> findByCodigoDeBarras(String codigoDeBarras);
     List<Medicamento> findByNomeContainingIgnoreCase(String nome);
     List<Medicamento> findByPrincipioAtivo(PrincipioAtivo principioAtivo);
