@@ -4,12 +4,13 @@ import materiamarcos.projetosecreto2.Config.JwtTokenProvider;
 import materiamarcos.projetosecreto2.DTOs.LoginRequestDTO;
 import materiamarcos.projetosecreto2.DTOs.RegistroRequestDTO;
 import materiamarcos.projetosecreto2.DTOs.UsuarioResponseDTO;
-import materiamarcos.projetosecreto2.Model.Role;       // Import da entidade Role
+import materiamarcos.projetosecreto2.Model.Role;
 import materiamarcos.projetosecreto2.Model.User;
-import materiamarcos.projetosecreto2.Model.enums.ERole; // Import do Enum ERole
-import materiamarcos.projetosecreto2.Repository.roleRepository;
+import materiamarcos.projetosecreto2.Model.enums.ERole;
+import materiamarcos.projetosecreto2.Repository.RoleRepository; // Import corrigido
 import materiamarcos.projetosecreto2.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,7 +28,7 @@ public class AuthService {
     @Autowired
     private UserRepository usuarioRepository;
     @Autowired
-    private roleRepository roleRepository; // Já está injetado, ótimo!
+    private RoleRepository roleRepository; // Variável declarada com o tipo correto "RoleRepository"
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -51,13 +52,11 @@ public class AuthService {
                 passwordEncoder.encode(registroRequestDTO.getPassword())
         );
 
-        // --- AJUSTE PARA ATRIBUIR PAPEL (ROLE) PADRÃO ---
         Set<Role> roles = new HashSet<>();
         Role clienteRole = roleRepository.findByNome(ERole.ROLE_CLIENTE)
                 .orElseThrow(() -> new RuntimeException("Erro: Papel padrão 'ROLE_CLIENTE' não encontrado no banco de dados."));
         roles.add(clienteRole);
         novoUsuario.setRoles(roles);
-        // --- FIM DO AJUSTE ---
 
         User usuarioSalvo = usuarioRepository.save(novoUsuario);
 
