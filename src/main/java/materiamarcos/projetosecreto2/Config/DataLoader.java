@@ -1,6 +1,7 @@
 package materiamarcos.projetosecreto2.Config;
 
 import materiamarcos.projetosecreto2.Model.*;
+import materiamarcos.projetosecreto2.Model.Role;
 import materiamarcos.projetosecreto2.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -8,6 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import materiamarcos.projetosecreto2.Model.enums.ERole;
+import java.util.Set;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -24,6 +27,8 @@ public class DataLoader implements CommandLineRunner {
     @Autowired private EstoqueRepository estoqueRepository;
     @Autowired private BalconistaRepository balconistaRepository;
     @Autowired private ClienteRepository clienteRepository;
+    @Autowired private roleRepository roleRepository;
+    @Autowired private UserRepository userRepository;
 
     @Override
     @Transactional
@@ -36,17 +41,24 @@ public class DataLoader implements CommandLineRunner {
 
         System.out.println("Iniciando DataLoader: Populando o banco de dados com dados iniciais...");
 
-        // 1. Criar Usuários, Balconistas e Clientes
-        User adminUser = usuarioRepository.save(new User("admin", "admin@barateira.com", passwordEncoder.encode("admin123")));
-        User balconistaUser = usuarioRepository.save(new User("joao.atendente", "joao@barateira.com", passwordEncoder.encode("joao123")));
+        // 1. Criar Papéis (Roles)
+        roleRepository.save(new Role(ERole.ROLE_ADMIN));
+        roleRepository.save(new Role(ERole.ROLE_BALCONISTA));
+        roleRepository.save(new Role(ERole.ROLE_CLIENTE));
+        System.out.println("-> Papéis criados.");
 
-        balconistaRepository.save(new Balconista(null, "João Atendente", "111.111.111-11", new BigDecimal("0.05"), new BigDecimal("1500.00"), balconistaUser));
-        balconistaRepository.save(new Balconista(null, "Maria Vendedora", "222.222.222-22", new BigDecimal("0.06"), new BigDecimal("1550.00"), null));
-        System.out.println("-> 2 Balconistas criados.");
+        Role adminRole = materiamarcos.projetosecreto2.Repository.roleRepository.findByNome(ERole.ROLE_ADMIN).orElseThrow(() -> new RuntimeException("Erro: Papel Admin não encontrado."));
+        Role balconistaRole = materiamarcos.projetosecreto2.Repository.roleRepository.findByNome(ERole.ROLE_BALCONISTA).orElseThrow(() -> new RuntimeException("Erro: Papel Balconista não encontrado."));
 
-        clienteRepository.save(new Cliente(null, "Carlos Cliente Fiel", "444.444.444-44", "carlos@email.com", "11999997777", "Rua das Flores", "100", "Apto 1", "Jardim", "Cidade Bela", "SP", "12345-001"));
-        clienteRepository.save(new Cliente(null, "Ana Testadora", "555.555.555-55", "ana.teste@email.com", "22988887777", "Av. Principal", "200", null, "Centro", "Outra Cidade", "RJ", "23456-002"));
-        System.out.println("-> 2 Clientes criados.");
+        // 2. Criar Usuários com Papéis
+        User adminUser = new User("admin", "admin@barateira.com", passwordEncoder.encode("admin123"));
+        adminUser.setRoles(Set.of(adminRole)); // Atribui o papel de Admin
+        usuarioRepository.save(adminUser);
+
+        User balconistaUser = new User("joao.atendente", "joao@barateira.com", passwordEncoder.encode("joao123"));
+        balconistaUser.setRoles(Set.of(balconistaRole)); // Atribui o papel de Balconista
+        usuarioRepository.save(balconistaUser);
+        System.out.println("-> Usuários 'admin' e 'joao.atendente' criados com seus papéis.");
 
         // 2. Criar Princípios Ativos e Indústrias
         PrincipioAtivo paParacetamol = criarOuCarregarPrincipioAtivo("Paracetamol", 15);

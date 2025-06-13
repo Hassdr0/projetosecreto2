@@ -204,4 +204,34 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+    try {
+        const response = await fetch('/api/filiais', { headers: { 'Authorization': `Bearer ${token}` } });
+
+        if (!response.ok) {
+            // Se a resposta não for OK, tentamos ler o corpo como JSON
+            const errorData = await response.json();
+
+            if (response.status === 403) { // Erro de Permissão
+                alert('Acesso Negado: Você não tem permissão para realizar esta ação.');
+                console.error('Erro 403:', errorData);
+                return; // Interrompe a execução
+            }
+
+            if (response.status === 401) { // Erro de Autenticação (token inválido/expirado)
+                alert('Sessão inválida ou expirada. Por favor, faça login novamente.');
+                window.location.href = 'login.html'; // Redireciona para o login
+                return;
+            }
+
+            // Outros erros (400, 500, etc.)
+            throw new Error(errorData.message || 'Ocorreu um erro.');
+        }
+
+        // ... processa a resposta de sucesso ...
+
+    } catch (error) {
+        console.error('Falha na requisição:', error);
+        // Poderia mostrar o erro em um div de alerta na página
+    }
 });
