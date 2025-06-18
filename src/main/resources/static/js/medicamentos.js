@@ -191,20 +191,86 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (target.classList.contains('btn-editar')) {
                 console.log('Editar medicamento ID:', medicamentoId);
-                // Lógica para buscar dados do medicamento e popular o modal para edição
-                // Ex: await carregarMedicamentoParaEdicao(medicamentoId);
-                alert('Funcionalidade Editar ainda não implementada.');
+                await carregarMedicamentoParaEdicao(medicamentoId);
             } else if (target.classList.contains('btn-deletar')) {
-                console.log('Deletar medicamento ID:', medicamentoId);
-                if (confirm(`Tem certeza que deseja deletar o medicamento com ID ${medicamentoId}?`)) {
-                    // Lógica para chamar o endpoint DELETE /api/medicamentos/${medicamentoId}
-                    // Ex: await deletarMedicamentoAPI(medicamentoId);
-                    alert('Funcionalidade Deletar ainda não implementada.');
-                }
-            }
+                  console.log('Deletar medicamento ID:', medicamentoId);
+                  if (confirm(`Tem certeza que deseja deletar o medicamento com ID ${medicamentoId}?`)) {
+                      await deletarMedicamentoAPI(medicamentoId);
+                  }
+              }
+
         });
     }
+    async function carregarMedicamentoParaEdicao(id) {
+        try {
+            const response = await fetch(`/api/medicamentos/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
 
+            if (!response.ok) {
+                throw new Error(`Erro ao buscar medicamento: ${response.status}`);
+            }
+
+            const med = await response.json();
+
+            // Preenche os campos do modal com os dados do medicamento
+            if (medicamentoIdInput) medicamentoIdInput.value = med.id;
+            if (nomeInput) nomeInput.value = med.nome || '';
+            if (codigoDeBarrasInput) codigoDeBarrasInput.value = med.codigoDeBarras || '';
+            if (descricaoInput) descricaoInput.value = med.descricao || '';
+            if (principioAtivoIdInput) principioAtivoIdInput.value = med.principioAtivoId || '';
+            if (industriaIdInput) industriaIdInput.value = med.industriaId || '';
+            if (precoCompraInput) precoCompraInput.value = med.precoCompra || '';
+            if (precoVendaInput) precoVendaInput.value = med.precoVenda || '';
+            if (validadeInput) validadeInput.value = med.validade || '';
+
+            if (promocaoInput) promocaoInput.checked = med.promocao || false;
+            if (divPrecoPromocional) {
+                divPrecoPromocional.style.display = med.promocao ? 'block' : 'none';
+            }
+            if (precoPromocionalInput) precoPromocionalInput.value = med.promocao ? (med.precoPromocional || '') : '';
+
+            if (medicamentoModalLabel) medicamentoModalLabel.textContent = 'Editar Medicamento';
+            if (formMedicamentoError) formMedicamentoError.style.display = 'none';
+
+            if (medicamentoModal) medicamentoModal.show();
+        } catch (error) {
+            console.error('Erro ao carregar medicamento para edição:', error);
+            alert('Erro ao carregar medicamento. Verifique o console para mais detalhes.');
+        }
+    }
+    async function deletarMedicamentoAPI(id) {
+        try {
+            const response = await fetch(`/api/medicamentos/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                let errorData;
+                try {
+                    errorData = await response.json();
+                } catch (_) {}
+                const errorMessage = errorData?.message || `Erro ao deletar: ${response.status}`;
+                throw new Error(errorMessage);
+            }
+
+            alert(`Medicamento ID ${id} deletado com sucesso!`);
+            carregarMedicamentos(); // atualiza a lista após exclusão
+        } catch (error) {
+            console.error('Erro ao deletar medicamento:', error);
+            alert(`Erro ao deletar medicamento: ${error.message}`);
+        }
+    }
+
+    async function carregarFiliais() {
     try {
         const response = await fetch('/api/filiais', { headers: { 'Authorization': `Bearer ${token}` } });
 
@@ -234,4 +300,6 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Falha na requisição:', error);
         // Poderia mostrar o erro em um div de alerta na página
     }
+}
+carregarFiliais();
 });

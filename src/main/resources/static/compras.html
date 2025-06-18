@@ -1,4 +1,3 @@
-git pull<!doctype html>
 <html lang="pt-br">
 <head>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,7 +15,7 @@ git pull<!doctype html>
     <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="dashboard.html">BARATEIRA</a>
     <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
     <input class="form-control form-control-dark w-100 rounded-0 border-0" type="text" placeholder="Buscar..." aria-label="Buscar">
-    <div class="navbar-nav"><div class="nav-item text-nowrap"><a class="nav-link px-3" href="#" id="logoutButtonCompras">Sair</a></div></div>
+    <div class="navbar-nav"><div class="nav-item text-nowrap"><a class="nav-link px-3" href="index.html" id="logoutButtonCompras">Sair</a></div></div>
 </header>
 <div class="container-fluid">
     <div class="row">
@@ -43,14 +42,84 @@ git pull<!doctype html>
         </nav>
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Gestão de Compras</h1>
+                <h1 class="h2">Gerenciamento de Compras</h1>
+                <div class="btn-toolbar mb-2 mb-md-0 page-header-toolbar">
+                    <button type="button" class="btn btn-sm btn-primary" id="btnAbrirModalAdicionar" data-bs-toggle="modal" data-bs-target="#CompraModal"><span data-feather="plus-circle" class="align-text-bottom"></span>Adicionar Nova Compra</button>
+                </div>
             </div>
-            <p>Conteúdo da página de compras em breve...</p>
+            <div id="loadingIndicator" class="loader" style="display:none;"></div>
+            <div id="listaComprasAlerta" class="alert" style="display:none;" role="alert"></div>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-sm">
+                    <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">data da compra</th>
+                        <th scope="col">valor total</th>
+                        <th scope="col">status</th>
+                        <th scope="col">número nota fiscal</th>
+                        <th scope="col">Ações</th></tr>
+                    </tr>
+                    </thead>
+                    <tbody id="tabelaComprasBody"></tbody>
+                </table>
+            </div>
+            <div class="modal fade" id="CompraModal" tabindex="-1" aria-labelledby="CompraModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="CompraModalLabel">Adicionar Compra</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="formCompra" class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="CompraId" class="form-label">ID da Compra</label>
+                                    <input type="text" class="form-control" id="CompraId" readonly>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="dataCompra" class="form-label">Data da Compra</label>
+                                    <input type="date" class="form-control" id="dataCompra" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="valorTotal" class="form-label">Valor Total</label>
+                                    <input type="number" step="0.01" class="form-control" id="valorTotal" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="numeroNotaFiscal" class="form-label">Número da Nota Fiscal</label>
+                                    <input type="text" class="form-control" id="numeroNotaFiscal" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="status" class="form-label">Status</label>
+                                    <select id="status" class="form-select" required>
+                                        <option value="" disabled selected>Selecione...</option>
+                                        <option value="PENDENTE">Pendente</option>
+                                        <option value="EM_PROCESSAMENTO">Em Processamento</option>
+                                        <option value="CONCLUIDA">Concluída</option>
+                                        <option value="CANCELADA">Cancelada</option>
+                                    </select>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                    <button type="submit" class="btn btn-primary">Salvar Compra</button>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 <script src="js/main.js"></script>
+<script src="js/compras.js"></script>
 </body>
 </html>

@@ -16,7 +16,7 @@
     <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="dashboard.html">BARATEIRA</a>
     <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
     <input class="form-control form-control-dark w-100 rounded-0 border-0" type="text" placeholder="Buscar..." aria-label="Buscar">
-    <div class="navbar-nav"><div class="nav-item text-nowrap"><a class="nav-link px-3" href="#" id="logoutButtonCompras">Sair</a></div></div>
+    <div class="navbar-nav"><div class="nav-item text-nowrap"><a class="nav-link px-3" href="index.html" id="logoutButtonCompras">Sair</a></div></div>
 </header>
 <div class="container-fluid">
     <div class="row">
@@ -45,7 +45,112 @@
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Relatorios</h1>
             </div>
-            <p>Conteúdo da página de relatorios em breve...</p>
+            <style>
+                .card-relatorio {
+                    background-color: #fff;
+                    border-left: 6px solid #6f42c1; /* Roxo escuro Bootstrap */
+                    border-radius: 12px;
+                    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                    padding: 1.5rem;
+                    margin-bottom: 2rem;
+                }
+
+                .card-relatorio h5 {
+                    color: #6f42c1;
+                    font-weight: 700;
+                }
+
+                .top3-item {
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 8px;
+                }
+
+                .top3-item span {
+                    font-weight: 600;
+                    margin-left: 10px;
+                }
+
+                .card-relatorio img {
+                    width: 60px;
+                    height: auto;
+                    object-fit: contain;
+                    margin-right: 20px;
+                }
+
+            </style>
+
+            <div class="container">
+                <div class="row">
+
+                    <!-- Lote mais lucrativo -->
+                    <div class="col-md-6">
+                        <div class="card-relatorio d-flex">
+                            <img src="https://cdn-icons-png.flaticon.com/512/3515/3515207.png" alt="Lote Lucro">
+                            <div>
+                                <h5>Lote de remédio que mais lucrou</h5>
+                                <div class="top3-item"><strong>1º</strong><span>Lote LOTE_DIP_001 - R$ 870</span></div>
+                                <div class="top3-item"><strong>2º</strong><span>Lote LOTE_LOS_006 - R$ 862</span></div>
+                                <div class="top3-item"><strong>3º</strong><span>Lote LOTE_DOR_010 - R$ 840</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Remédio mais comprado -->
+                    <div class="col-md-6">
+                        <div class="card-relatorio d-flex">
+                            <img src="https://cdn-icons-png.flaticon.com/512/4290/4290854.png" alt="Remédio">
+                            <div>
+                                <h5>Remédio mais comprado</h5>
+                                <div class="top3-item"><strong>1º</strong><span>Dipirona</span></div>
+                                <div class="top3-item"><strong>2º</strong><span>Paracetamol</span></div>
+                                <div class="top3-item"><strong>3º</strong><span>Ibuprofeno</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filial mais lucrativa -->
+                    <div class="col-md-6">
+                        <div class="card-relatorio d-flex">
+                            <img src="https://cdn-icons-png.flaticon.com/512/808/808439.png" alt="Filial">
+                            <div>
+                                <h5>Filial que mais lucrou</h5>
+                                <div class="top3-item"><strong>1º</strong><span>Filial São Paulo - R$ 45.000</span></div>
+                                <div class="top3-item"><strong>2º</strong><span>Filial Recife - R$ 41.200</span></div>
+                                <div class="top3-item"><strong>3º</strong><span>Filial Goiânia - R$ 37.500</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Investimento do mês -->
+                    <div class="col-md-6">
+                        <div class="card-relatorio d-flex">
+                            <img src="https://cdn-icons-png.flaticon.com/512/2972/2972815.png" alt="Investimento">
+                            <div>
+                                <h5>Investimento deste mês</h5>
+                                <div class="top3-item"><strong>Total:</strong><span>R$ 22.000</span></div>
+                                <div class="top3-item"><strong>Em Estoque:</strong><span>R$ 12.000</span></div>
+                                <div class="top3-item"><strong>Em Marketing:</strong><span>R$ 10.000</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lucro total de vendas -->
+                    <div class="col-md-12">
+                        <div class="card-relatorio d-flex">
+                            <img src="https://cdn-icons-png.flaticon.com/512/1170/1170627.png" alt="Lucro Total">
+                            <div>
+                                <h5>Lucro total de vendas</h5>
+                                <div class="top3-item"><strong>Mês atual:</strong><span>R$ 123.000</span></div>
+                                <div class="top3-item"><strong>Mês anterior:</strong><span>R$ 107.000</span></div>
+                                <div class="top3-item"><strong>Variação:</strong><span>+15%</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
         </main>
     </div>
 </div>

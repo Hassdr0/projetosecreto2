@@ -16,7 +16,7 @@
     <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="dashboard.html">BARATEIRA</a>
     <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
     <input class="form-control form-control-dark w-100 rounded-0 border-0" type="text" placeholder="Buscar..." aria-label="Buscar">
-    <div class="navbar-nav"><div class="nav-item text-nowrap"><a class="nav-link px-3" href="#" id="logoutButtonCompras">Sair</a></div></div>
+    <div class="navbar-nav"><div class="nav-item text-nowrap"><a class="nav-link px-3" href="index.html" id="logoutButtonCompras">Sair</a></div></div>
 </header>
 <div class="container-fluid">
     <div class="row">
@@ -43,14 +43,87 @@
         </nav>
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Gestão de Filiais</h1>
+                <h1 class="h2">Gerenciamento de Filiais</h1>
+                <div class="btn-toolbar mb-2 mb-md-0 page-header-toolbar">
+                    <button type="button" class="btn btn-sm btn-primary" id="btnAbrirModalAdicionar" data-bs-toggle="modal" data-bs-target="#FilialModal"><span data-feather="plus-circle" class="align-text-bottom"></span>Adicionar Nova Filial</button>
+                </div>
             </div>
-            <p>Conteúdo da página de filiais em breve...</p>
+            <div id="loadingIndicator" class="loader" style="display:none;"></div>
+            <div id="listaFiliaisAlerta" class="alert" style="display:none;" role="alert"></div>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-sm">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Nome</th>
+                            <th scope="col">UF</th>
+                            <th scope="col">Cidade</th>
+                            <th scope="col">CNPJ</th>
+                            <th scope="col">Telefone</th>
+                            <th scope="col">Ações</th></tr>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaFiliaisBody"></tbody>
+                </table>
+            </div>
+            <div class="modal fade" id="FilialModal" tabindex="-1" aria-labelledby="FilialModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="FilialModalLabel">Adicionar Filial</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="formFilial" class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="nome" class="form-label">Nome da Filial</label>
+                                    <input type="text" class="form-control" id="nome" required>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="uf" class="form-label">UF</label>
+                                    <input type="text" class="form-control" id="uf" required>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="filialId" class="form-label">Filial Id</label>
+                                    <input type="text" class="form-control" id="filialId" readonly>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="cidade" class="form-label">Cidade</label>
+                                    <input type="text" class="form-control" id="cidade" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="cnpj" class="form-label">CNPJ</label>
+                                    <input type="text" class="form-control" id="cnpj" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="telefone" class="form-label">Telefone</label>
+                                    <input type="text" class="form-control" id="telefone">
+                                </div>
+                                <div class="col-12">
+                                    <label for="endereco" class="form-label">Endereço</label>
+                                    <input type="text" class="form-control" id="endereco">
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                    <button type="submit" class="btn btn-primary">Salvar Filial</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 <script src="js/main.js"></script>
+<script src="js/filial.js"></script>
 </body>
 </html>

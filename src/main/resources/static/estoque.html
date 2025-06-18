@@ -9,20 +9,35 @@
     <title>BARATEIRA - Compras</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link href="css/style.css" rel="stylesheet">
-    <style>.sidebar .nav-link [data-feather]{margin-right:8px;vertical-align:text-bottom;width:16px;height:16px;}</style>
+    <style>
+        .sidebar .nav-link [data-feather] {
+          margin-right: 8px;
+          vertical-align: text-bottom;
+          width: 16px;
+          height: 16px;
+        }
+    </style>
 </head>
 <body>
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
     <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="dashboard.html">BARATEIRA</a>
-    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
     <input class="form-control form-control-dark w-100 rounded-0 border-0" type="text" placeholder="Buscar..." aria-label="Buscar">
-    <div class="navbar-nav"><div class="nav-item text-nowrap"><a class="nav-link px-3" href="#" id="logoutButtonCompras">Sair</a></div></div>
+    <div class="navbar-nav">
+        <div class="nav-item text-nowrap">
+            <a class="nav-link px-3" href="index.html" id="logoutButtonCompras">Sair</a>
+        </div>
+    </div>
 </header>
 <div class="container-fluid">
     <div class="row">
         <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
             <div class="position-sticky pt-3 sidebar-sticky">
-                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase"><span>Principal</span></h6>
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+                    <span>Principal</span>
+                </h6>
                 <ul class="nav flex-column">
                     <li class="nav-item"><a class="nav-link" id="navDashboard" href="dashboard.html"><span data-feather="home"></span>Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link" id="navCompras" href="compras.html"><span data-feather="shopping-cart"></span>Compras</a></li>
@@ -33,7 +48,9 @@
                     <li class="nav-item"><a class="nav-link" id="navRelatorio" href="relatorio.html"><span data-feather="bar-chart-2"></span>Relatório</a></li>
                     <li class="nav-item"><a class="nav-link" id="navFinancas" href="financas.html"><span data-feather="dollar-sign"></span>Finanças</a></li>
                 </ul>
-                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase"><span>Configurações</span></h6>
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+                    <span>Configurações</span>
+                </h6>
                 <ul class="nav flex-column mb-2">
                     <li class="nav-item"><a class="nav-link" id="navConfigItem" href="config_item.html"><span data-feather="settings"></span>Item</a></li>
                     <li class="nav-item"><a class="nav-link" id="navConfigUsuario" href="config_usuario.html"><span data-feather="users"></span>Usuário</a></li>
@@ -43,14 +60,105 @@
         </nav>
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Gestão de Estoque</h1>
+                <h1 class="h2">Gerenciamento de Estoques</h1>
+                <div class="btn-toolbar mb-2 mb-md-0 page-header-toolbar">
+                    <button type="button" class="btn btn-sm btn-primary" id="btnAbrirModalAdicionar" data-bs-toggle="modal" data-bs-target="#EstoqueModal">
+                        <span data-feather="plus-circle" class="align-text-bottom"></span>Adicionar Nova Estoque
+                    </button>
+                </div>
             </div>
-            <p>Conteúdo da página de estoque em breve...</p>
+            <div id="loadingIndicator" class="loader" style="display:none;"></div>
+            <div id="listaEstoqueAlerta" class="alert" style="display:none;" role="alert"></div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="medicamentoId" class="form-label">Nome do medicamento</label>
+                    <input type="number" class="form-control" id="medicamentoId" placeholder="Dipirona 500mg">
+                </div>
+                <div class="col-md-4">
+                    <label for="farmaciaId" class="form-label">ID da Farmácia</label>
+                    <input type="number" class="form-control" id="farmaciaId" placeholder="Barateira Filial Centro">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="button" id="btnBuscarEstoque" class="btn btn-primary w-100">Buscar Estoque</button>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-sm">
+                    <thead>
+                    <tr>
+                        <th scope="col">Id</th>
+                        <!--  <th scope="col">Data de validade do Lote</th> gambiarra arrumar dps-->
+                        <th scope="col">Preço custo do lote</th>
+                        <th scope="col">Quantidade</th>
+                        <th scope="col">data ultima atualizacao</th>
+                        <th scope="col">farmacia</th>
+                        <th scope="col">medicamento</th>
+                        <th scope="col">Lote</th>
+                        <th scope="col">Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tabelaEstoqueBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="EstoqueModal" tabindex="-1" aria-labelledby="EstoqueModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="EstoqueModalLabel">Adicionar Estoque</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="formEstoque" class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="dataValidadeLote" class="form-label">Data de Validade do Lote</label>
+                                    <input type="date" class="form-control" id="dataValidadeLote" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="precoCusto" class="form-label">Preço de Custo do Lote</label>
+                                    <input type="number" class="form-control" id="precoCusto" step="0.01" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="quantidade" class="form-label">Quantidade</label>
+                                    <input type="number" class="form-control" id="quantidade" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="modalFarmaciaId" class="form-label">Farmacia Id</label>
+                                    <input type="text" class="form-control" id="modalFarmaciaId" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="modalMedicamentoId" class="form-label">Medicamento Id</label>
+                                    <input type="text" class="form-control" id="modalMedicamentoId" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="estoqueId" class="form-label">Estoque Id</label>
+                                    <input type="text" class="form-control" id="estoqueId" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="lote" class="form-label">Lote</label>
+                                    <input type="text" class="form-control" id="lote" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="dataAtualizacao" class="form-label">Data Última Atualização</label>
+                                    <input type="datetime-local" class="form-control" id="dataAtualizacao" required>
+                                </div>
+                                <div class="col-12 text-end">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                    <button type="submit" class="btn btn-primary">Salvar Estoque</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 <script src="js/main.js"></script>
+<script src="js/estoque.js"></script>
 </body>
 </html>
+

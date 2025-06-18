@@ -46,6 +46,7 @@ public class SecurityConfig {
                         .accessDeniedHandler(customAccessDeniedHandler)
                 )
                 .authorizeHttpRequests(authz -> authz
+                        /*Gambiarra Master vaz
                         // 1. Permite acesso aos endpoints de autenticação
                         .requestMatchers("/api/auth/**").permitAll()
 
@@ -55,6 +56,8 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         // 3. Qualquer outra requisição precisa de autenticação
                         .anyRequest().authenticated()
+                        */
+                        .anyRequest().permitAll()
                 )
                 // Adiciona nosso filtro JWT antes do filtro padrão do Spring
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

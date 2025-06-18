@@ -15,14 +15,14 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#publicNavbarProdutos" aria-controls="publicNavbarProdutos" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="publicNavbarProdutos">
+        <div class="collapse navbar-collapse justify-content-end" id="publicNavbarProdutos"><!--
             <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
                 <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="produtos.html">Produtos</a></li>
                 <li class="nav-item"><a class="nav-link" href="promocoes_publico.html">Promoções</a></li>
                 <li class="nav-item"><a class="nav-link" href="filiais_publico.html">Nossas Lojas</a></li>
                 <li class="nav-item"><a class="nav-link" href="contato.html">Contato</a></li>
-            </ul>
+            </ul>-->
             <div class="d-flex">
                 <a class="btn btn-outline-primary me-2 btn-sm" href="login.html" role="button">Login</a>
                 <a class="btn btn-primary btn-sm" href="registrar.html" role="button">Registrar</a>
@@ -33,35 +33,137 @@
 
 <main class="container mt-5 pt-5">
 
-    <section id="promocoesEmDestaque" class="py-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="section-title-produtos mb-0">Promoções em Destaque</h2>
-            <a href="promocoes_publico.html" class="btn btn-sm btn-outline-primary">Ver Todas as Promoções</a>
+    <section id="promocoesEmDestaque" class="py-4 bg-light">
+        <div class="d-flex justify-content-between align-items-center mb-4 px-3">
+            <h2 class="section-title-produtos mb-0">Promoções</h2>
         </div>
-        <div id="loadingPromocoes" class="loader" style="display: none;"></div>
-        <div id="listaPromocoesAlerta" class="alert" style="display: none;" role="alert"></div>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" id="promocoesGrid">
-        </div>
+
+        <form id="formCarrinhoPromocoes" onsubmit="handleAdicionarCarrinho(event, 'promocoesGrid')">
+            <div id="loadingPromocoes" class="text-center" style="display: none;">
+                <div class="spinner-border spinner-roxo" role="status">
+                    <span class="visually-hidden">Carregando promoções...</span>
+                </div>
+            </div>
+
+            <div id="listaPromocoesAlerta" class="alert alert-danger mx-3" style="display: none;" role="alert">
+                Não foi possível carregar as promoções.
+            </div>
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 px-3" id="promocoesGrid">
+                <!-- JS insere cards com checkbox -->
+            </div>
+
+            <div class="text-center mt-4">
+                <button id="btnAdicionarCarrinhoPromocoes" type="submit" class="btn btn-success">Adicionar ao Carrinho</button>
+            </div>
+        </form>
     </section>
+
+
+
+    <style>
+        .section-title-produtos {
+            color: #4B0082; /* Roxo escuro */
+            font-weight: bold;
+        }
+
+        .card-produto {
+            border: 1px solid #4B0082;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(75, 0, 130, 0.1);
+        }
+
+        .card-produto .card-title {
+            color: #001f3f; /* Azul escuro */
+        }
+
+        .card-produto .preco {
+            font-weight: bold;
+            color: #4B0082;
+        }
+
+        .card-produto .preco-promocional {
+            color: #d63384;
+        }
+
+        .spinner-roxo {
+            color: #4B0082;
+            border-color: #4B0082;
+            border-right-color: transparent !important;
+        }
+    </style>
+
 
     <hr class="my-5">
 
-    <section id="todosOsProdutos" class="py-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    <section id="todosOsProdutos" class="py-4 bg-light">
+        <div class="d-flex justify-content-between align-items-center mb-4 px-3">
             <h2 class="section-title-produtos mb-0">Todos os Produtos</h2>
-            <div>
+        </div>
 
-                <button class="btn btn-sm btn-outline-secondary me-2">Filtrar</button>
-                <select class="form-select form-select-sm d-inline-block w-auto"><option selected>Ordenar por</option></select>
+        <form id="formCarrinhoProdutos" onsubmit="handleAdicionarCarrinho(event, 'produtosGrid')">
+            <div id="loadingProdutos" class="text-center" style="display: none;">
+                <div class="spinner-border spinner-roxo" role="status">
+                    <span class="visually-hidden">Carregando...</span>
+                </div>
             </div>
-        </div>
-        <div id="loadingProdutos" class="loader" style="display: none;"></div>
-        <div id="listaProdutosAlerta" class="alert" style="display: none;" role="alert"></div>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" id="produtosGrid">
-        </div>
 
-        <nav aria-label="Navegação de produtos" class="mt-5 d-flex justify-content-center"><ul class="pagination">...</ul></nav>
+            <div id="listaProdutosAlerta" class="alert alert-danger mx-3" style="display: none;" role="alert">
+                Não foi possível carregar os produtos.
+            </div>
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 px-3" id="produtosGrid">
+                <!-- JS insere cards com checkbox -->
+            </div>
+
+            <div class="text-center mt-4">
+                <button id="btnAdicionarCarrinhoProduto" type="submit" class="btn btn-success">Adicionar ao Carrinho</button>
+            </div>
+        </form>
+
+        <nav aria-label="Navegação de produtos" class="mt-5 d-flex justify-content-center">
+            <ul class="pagination">
+                <!-- Paginação futura -->
+            </ul>
+        </nav>
     </section>
+
+
+
+
+    <style>
+        .section-title-produtos {
+            color: #4B0082; /* Roxo escuro */
+            font-weight: bold;
+        }
+
+        .card-produto {
+            border: 1px solid #4B0082;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(75, 0, 130, 0.1);
+        }
+
+        .card-produto .card-title {
+            color: #001f3f; /* Azul escuro */
+        }
+
+        .card-produto .preco {
+            font-weight: bold;
+            color: #4B0082;
+        }
+
+        .card-produto .preco-promocional {
+            color: #d63384;
+        }
+
+        .spinner-roxo {
+            color: #4B0082;
+            border-color: #4B0082;
+            border-right-color: transparent !important;
+        }
+    </style>
+
+
 
 </main>
 
@@ -90,5 +192,6 @@
         });
     });
 </script>
-<script src="js/produtos.js"></script> </body>
+<script src="js/listarproduto.js"></script>
+</body>
 </html>
